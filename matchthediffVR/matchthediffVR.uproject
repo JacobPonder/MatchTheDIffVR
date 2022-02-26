@@ -16,7 +16,12 @@
 	"Plugins": [
 		{
 			"Name": "SteamVR",
-			"Enabled": true
+			"Enabled": true,
+			"SupportedTargetPlatforms": [
+				"Win32",
+				"Win64",
+				"Linux"
+			]
 		}
 	]
 }

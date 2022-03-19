@@ -14,6 +14,12 @@ class MATCHTHEDIFFVR_API AInteractables : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AInteractables();
+	UPROPERTY(VisibleDefaultsOnly,BlueprintReadWrite, Category=Mesh)
+	UStaticMeshComponent* BaseMesh;
+	
+	UPROPERTY(VisibleDefaultsOnly,BlueprintReadWrite, Category=Mesh)
+	UStaticMeshComponent* OutlineMesh;
+
 
 protected:
 	// Called when the game starts or when spawned

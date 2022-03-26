@@ -14,12 +14,21 @@ class MATCHTHEDIFFVR_API AInteractables : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AInteractables();
+	//meshes
 	UPROPERTY(VisibleDefaultsOnly,BlueprintReadWrite, Category=Mesh)
 	UStaticMeshComponent* BaseMesh;
 	
 	UPROPERTY(VisibleDefaultsOnly,BlueprintReadWrite, Category=Mesh)
 	UStaticMeshComponent* OutlineMesh;
-
+	
+	UPROPERTY(VisibleDefaultsOnly,BlueprintReadWrite, Category=Mesh)
+	UStaticMeshComponent* SolutionMesh;
+	/**optional*/
+	UPROPERTY(VisibleDefaultsOnly,BlueprintReadWrite, Category=Mesh)
+	UStaticMeshComponent* SolutionOutlineMesh;
+	//other
+	UPROPERTY(VisibleDefaultsOnly,BlueprintReadWrite, Category=Mesh)
+	FVector DistanceBetweenHouses; 
 
 protected:
 	// Called when the game starts or when spawned
@@ -28,5 +37,12 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	//highlight and  return self
+	void Highlighted();
+
+	void UnHighlighted();
+	//used when clicked
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnActivate();
 
 };

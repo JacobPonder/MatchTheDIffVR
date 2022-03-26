@@ -10,6 +10,8 @@
 #include "SteamVRChaperoneComponent.h"
 #include "MotionControllerComponent.h"
 #include "XRMotionControllerBase.h"
+#include "matchthediffVR/Interactables.h"
+
 #include "cVRPlayerPawn.generated.h"
 
 UCLASS()
@@ -29,6 +31,8 @@ private:
 	USkeletalMeshComponent* m_meshRightHand;
 	UcPlayerHandAnimBP* m_refLeftHandAnimBP;
 	UcPlayerHandAnimBP* m_refRightHandAnimBP;
+	bool IsHighlighting = false;
+	AInteractables* CurHighlighted;
 	void CacheHandAnimInstances();
 public:	
 	// Called every frame

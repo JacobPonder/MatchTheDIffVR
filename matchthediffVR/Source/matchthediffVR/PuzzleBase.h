@@ -13,5 +13,11 @@ UCLASS()
 class MATCHTHEDIFFVR_API APuzzleBase : public AInteractables
 {
 	GENERATED_BODY()
-	
+	public:
+	APuzzleBase();
+	/**Identifier to determine what the solution checker checks*/
+	UPROPERTY(BlueprintReadWrite)
+	int StageNumber;
+	UPROPERTY(BlueprintReadWrite)
+	bool isCorrect;
 };

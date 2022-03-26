@@ -3,3 +3,7 @@
 
 #include "PuzzleBase.h"
 
+
+APuzzleBase::APuzzleBase()
+{
+}

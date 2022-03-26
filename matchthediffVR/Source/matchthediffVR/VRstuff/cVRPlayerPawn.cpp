@@ -3,6 +3,8 @@
 
 #include "cVRPlayerPawn.h"
 
+#include "matchthediffVR/Interactables.h"
+
 
 // Sets default values
 AcVRPlayerPawn::AcVRPlayerPawn()
@@ -34,7 +36,42 @@ void AcVRPlayerPawn::CacheHandAnimInstances()
 void AcVRPlayerPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+//get meshes, if ovelap is interactable, call highlight,set bool to true, else set bool to false
 
+	// trace params required for line trace, ignore actor prevents from hitting itself
+	FCollisionQueryParams TraceParams;
+	TraceParams.AddIgnoredActor(this);	// owning player of mod is ignored
+	// initialize hit info
+	FHitResult HitResult;
+	// do trace to muzzle to fire direction * laser range
+	bool HadHit = GetWorld()->LineTraceSingleByChannel(
+		HitResult,
+		m_meshRightHand->GetComponentLocation(),
+		m_meshRightHand->GetComponentLocation() + m_meshRightHand->GetForwardVector()*100,
+		ECC_Visibility,
+		TraceParams);
+		
+	if(HadHit)
+	{
+		AInteractables* selected = Cast<AInteractables>(HitResult.Actor);
+		if(selected)
+		{
+			if(CurHighlighted!=selected)
+			{
+				CurHighlighted->UnHighlighted();
+				selected->Highlighted();
+				CurHighlighted = selected;
+			}
+			IsHighlighting = true;
+		}
+		else
+		{
+			CurHighlighted->UnHighlighted();
+			CurHighlighted = nullptr;
+			IsHighlighting = true;
+		}
+		
+	}
 }
 
 // Called to bind functionality to input
@@ -151,6 +188,7 @@ void AcVRPlayerPawn::GripLeftHand_Pressed_Implementation()
 {
 	UE_LOG(LogTemp, Log, TEXT("Left Hand Grip Pressed"));
 	m_refLeftHandAnimBP->SetGripValue(1.0f);
+	//if bool call targets clicked
 }
 void AcVRPlayerPawn::GripRightHand_Pressed_Implementation()
 {
@@ -162,6 +200,11 @@ void AcVRPlayerPawn::GripLeftHand_Released_Implementation()
 {
 	UE_LOG(LogTemp, Log, TEXT("Left Hand Grip Released"));
 	m_refLeftHandAnimBP->SetGripValue(0.0f);
+	//if bool call targets clicked
+	if(IsHighlighting)
+	{
+		CurHighlighted->OnActivate();
+	}
 
 }
 void AcVRPlayerPawn::GripRightHand_Released_Implementation()

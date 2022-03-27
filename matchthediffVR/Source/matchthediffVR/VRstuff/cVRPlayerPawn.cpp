@@ -4,6 +4,7 @@
 #include "cVRPlayerPawn.h"
 
 #include "matchthediffVR/Interactables.h"
+#include "matchthediffVR/PickupBase.h"
 
 
 // Sets default values
@@ -56,13 +57,20 @@ void AcVRPlayerPawn::Tick(float DeltaTime)
 		AInteractables* selected = Cast<AInteractables>(HitResult.Actor);
 		if(selected)
 		{
-			if(CurHighlighted!=selected)
+			APickupBase* Pickup = Cast<APickupBase>(HitResult.Actor);
+			if(Pickup&&Pickup->IsPickedUp)
 			{
-				CurHighlighted->UnHighlighted();
-				selected->Highlighted();
-				CurHighlighted = selected;
 			}
-			IsHighlighting = true;
+			else
+			{
+				if(CurHighlighted!=selected)
+				{
+					CurHighlighted->UnHighlighted();
+					selected->Highlighted();
+					CurHighlighted = selected;
+				}
+				IsHighlighting = true;
+			}
 		}
 		else
 		{

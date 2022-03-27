@@ -13,5 +13,10 @@ UCLASS()
 class MATCHTHEDIFFVR_API APickupBase : public AInteractables
 {
 	GENERATED_BODY()
-	
+	public:
+	APickupBase();
+	/**Identifier to determine what the solution checker checks*/
+
+	UPROPERTY(BlueprintReadWrite)
+	bool IsPickedUp;
 };

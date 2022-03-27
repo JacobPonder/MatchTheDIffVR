@@ -3,3 +3,6 @@
 
 #include "PickupBase.h"
 
+APickupBase::APickupBase()
+{
+}

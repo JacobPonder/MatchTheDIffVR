@@ -27,14 +27,21 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 private:
-	USkeletalMeshComponent* m_meshLeftHand;
-	USkeletalMeshComponent* m_meshRightHand;
-	UcPlayerHandAnimBP* m_refLeftHandAnimBP;
-	UcPlayerHandAnimBP* m_refRightHandAnimBP;
+	
 	bool IsHighlighting = false;
 	AInteractables* CurHighlighted;
 	void CacheHandAnimInstances();
-public:	
+	
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USkeletalMeshComponent* m_meshLeftHand;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USkeletalMeshComponent* m_meshRightHand;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UcPlayerHandAnimBP* m_refLeftHandAnimBP;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UcPlayerHandAnimBP* m_refRightHandAnimBP;
+	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

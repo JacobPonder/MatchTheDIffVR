@@ -12,14 +12,14 @@ AcVRPlayerPawn::AcVRPlayerPawn()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	CreateComponents();
 }
 
 // Called when the game starts or when spawned
 void AcVRPlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
-	CreateComponents();
+	//CreateComponents();
 }
 
 void AcVRPlayerPawn::CacheHandAnimInstances()
@@ -150,18 +150,18 @@ USkeletalMeshComponent* AcVRPlayerPawn::CreateHandMesh(UMotionControllerComponen
 	USkeletalMeshComponent* refComponentHand = NULL;
  
 	//Find the default cube that ships with the engine content
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> HandMeshObject(TEXT("SkeletalMesh'/Game/VirtualReality/Mannequin/Character/Mesh/MannequinHand_Right.MannequinHand_Right'"));
-	if (!HandMeshObject.Object)
-	{
-		UE_LOG(LogTemp, Error, TEXT("Could not load the default cube for hand mesh"));
-		return NULL;
-	}
+	//static ConstructorHelpers::FObjectFinder<USkeletalMesh> HandMeshObject(TEXT("SkeletalMesh'/Game/VirtualReality/Mannequin/Character/Mesh/MannequinHand_Right.MannequinHand_Right'"));
+	//if (!HandMeshObject.Object)
+	//{
+		//UE_LOG(LogTemp, Error, TEXT("Could not load the default cube for hand mesh"));
+		//return NULL;
+	//}
 	if (!refComponentHand)
 	{
 		//create the mesh component
 		refComponentHand = CreateDefaultSubobject<USkeletalMeshComponent>(a_strDisplayName);
 		//set the mesh to the component
-		refComponentHand->SetSkeletalMesh(HandMeshObject.Object,true);
+		//refComponentHand->SetSkeletalMesh(HandMeshObject.Object,true);
 	
  
 		//Set the defaults
@@ -183,8 +183,8 @@ USkeletalMeshComponent* AcVRPlayerPawn::CreateHandMesh(UMotionControllerComponen
 
 void AcVRPlayerPawn::SetHandAnimationBlueprint(USkeletalMeshComponent* a_refHand)
 {
-	static ConstructorHelpers::FObjectFinder<UClass> HandAnimBP(TEXT("AnimBlueprintGeneratedClass'/Game/VirtualReality/Mannequin/Animations/RightHand_AnimBP.RightHand_AnimBP_C'"));
-	if (HandAnimBP.Succeeded())
+	//static ConstructorHelpers::FObjectFinder<UClass> HandAnimBP(TEXT("AnimBlueprintGeneratedClass'/Game/VirtualReality/Mannequin/Animations/RightHand_AnimBP.RightHand_AnimBP_C'"));
+	/*if (HandAnimBP.Succeeded())
 	{
 		a_refHand->AnimClass = HandAnimBP.Object;
 		a_refHand->SetAnimationMode(EAnimationMode::AnimationBlueprint);
@@ -193,7 +193,7 @@ void AcVRPlayerPawn::SetHandAnimationBlueprint(USkeletalMeshComponent* a_refHand
 	else
 	{
 		UE_LOG(LogTemp, Error, TEXT("Could not load the hand anim BP"));
-	}
+	}*/
 }
 
 void AcVRPlayerPawn::RightMove_Implementation(float Value)

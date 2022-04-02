@@ -22,7 +22,7 @@ AInteractables::AInteractables()
 	if(!SolutionMesh)
 	{
 		SolutionMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SolutionMesh"));
-		SetActorLocation(BaseMesh->GetComponentLocation()+DistanceBetweenHouses);
+		SetActorLocation(BaseMesh->GetRelativeLocation()+DistanceBetweenHouses);
 		
 	}
 	if(!SolutionOutlineMesh)

@@ -28,7 +28,7 @@ public:
 	UStaticMeshComponent* SolutionOutlineMesh;
 	//other
 	UPROPERTY(VisibleDefaultsOnly,BlueprintReadWrite, Category=Mesh)
-	FVector DistanceBetweenHouses; 
+	FVector DistanceBetweenHouses = FVector(0,2174.000000,0); 
 
 protected:
 	// Called when the game starts or when spawned

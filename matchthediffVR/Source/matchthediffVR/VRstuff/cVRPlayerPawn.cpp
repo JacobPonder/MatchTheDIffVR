@@ -90,6 +90,9 @@ void AcVRPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	InputComponent->BindAction("GripRight", IE_Pressed, this, &AcVRPlayerPawn::GripRightHand_Pressed);
 	InputComponent->BindAction("GripLeft", IE_Released, this, &AcVRPlayerPawn::GripLeftHand_Released);
 	InputComponent->BindAction("GripRight", IE_Released, this, &AcVRPlayerPawn::GripRightHand_Released);
+	InputComponent->BindAxis("MoveForward", this, &AcVRPlayerPawn::ForwardMove);
+	InputComponent->BindAxis("MoveRight", this, &AcVRPlayerPawn::RightMove);
+
 
 }
 void AcVRPlayerPawn::CreateComponents()
@@ -192,6 +195,42 @@ void AcVRPlayerPawn::SetHandAnimationBlueprint(USkeletalMeshComponent* a_refHand
 		UE_LOG(LogTemp, Error, TEXT("Could not load the hand anim BP"));
 	}
 }
+
+void AcVRPlayerPawn::RightMove_Implementation(float Value)
+{
+	if ( (Controller != NULL) && (Value != 0.0f) )
+	{
+		// find out which way is forward
+		FRotator Rotation = Controller->GetControlRotation();
+		// Limit pitch when walking or falling
+		/*if ( CharacterMovement->IsMovingOnGround() || CharacterMovement->IsFalling() )
+		{
+			Rotation.Pitch = 0.0f;
+		}*/
+		// add movement in that direction
+		const FVector Direction = FRotationMatrix(Rotation).GetScaledAxis(EAxis::X);
+		AddMovementInput(Direction, Value);
+	}
+}
+	
+
+void AcVRPlayerPawn::ForwardMove_Implementation(float Value)
+{
+	if ( (Controller != NULL) && (Value != 0.0f) )
+	{
+		// find out which way is forward
+		FRotator Rotation = Controller->GetControlRotation();
+		// Limit pitch when walking or falling
+		/*if ( CharacterMovement->IsMovingOnGround() || CharacterMovement->IsFalling() )
+		{
+		Rotation.Pitch = 0.0f;
+		}*/
+		// add movement in that direction
+		const FVector Direction = FRotationMatrix(Rotation).GetScaledAxis(EAxis::X);
+		AddMovementInput(Direction, Value);
+	}
+}
+
 void AcVRPlayerPawn::GripLeftHand_Pressed_Implementation()
 {
 	UE_LOG(LogTemp, Log, TEXT("Left Hand Grip Pressed"));

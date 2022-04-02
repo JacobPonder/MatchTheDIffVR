@@ -59,4 +59,8 @@ public:
 	void GripLeftHand_Released();
 	UFUNCTION(BlueprintNativeEvent, Category = "Input")
 	void GripRightHand_Released();
+	UFUNCTION(BlueprintNativeEvent, Category = "Input")
+	void ForwardMove(float Value);
+	UFUNCTION(BlueprintNativeEvent, Category = "Input")
+	void RightMove(float Value);
 };

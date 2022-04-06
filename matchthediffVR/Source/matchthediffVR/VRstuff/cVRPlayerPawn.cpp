@@ -74,9 +74,12 @@ void AcVRPlayerPawn::Tick(float DeltaTime)
 		}
 		else
 		{
-			CurHighlighted->UnHighlighted();
-			CurHighlighted = nullptr;
-			IsHighlighting = true;
+			if(CurHighlighted)
+			{
+				CurHighlighted->UnHighlighted();
+				CurHighlighted = nullptr;
+				IsHighlighting = false;
+			}
 		}
 		
 	}

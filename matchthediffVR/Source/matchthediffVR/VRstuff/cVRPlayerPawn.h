@@ -30,6 +30,8 @@ private:
 	
 	bool IsHighlighting = false;
 	AInteractables* CurHighlighted;
+	FVector TpLocation;
+	bool TPrequest= false;
 	void CacheHandAnimInstances();
 
 	
@@ -71,8 +73,13 @@ public:
 	void GripLeftHand_Released();
 	UFUNCTION(BlueprintNativeEvent, Category = "Input")
 	void GripRightHand_Released();
+	UFUNCTION(BlueprintNativeEvent, Category = "Input")
+	void TP_Player();
+	
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	void ForwardMove(float Value);
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	void RightMove(float Value);
 };
+
+

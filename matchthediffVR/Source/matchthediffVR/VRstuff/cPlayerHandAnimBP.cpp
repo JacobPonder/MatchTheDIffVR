@@ -12,3 +12,8 @@ void UcPlayerHandAnimBP::SetGripValue(float a_fGrip)
 {
 	m_fGripVal = a_fGrip;
 }
+
+float UcPlayerHandAnimBP::GetGripValue()
+{
+	return m_fGripVal;
+}

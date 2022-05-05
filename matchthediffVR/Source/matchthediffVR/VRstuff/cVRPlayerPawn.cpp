@@ -48,16 +48,18 @@ void AcVRPlayerPawn::Tick(float DeltaTime)
 	bool HadHit = GetWorld()->LineTraceSingleByChannel(
 		HitResult,
 		m_meshRightHand->GetComponentLocation(),
-		m_meshRightHand->GetComponentLocation() + m_meshRightHand->GetForwardVector()*100,
+		m_meshRightHand->GetComponentLocation() + m_meshRightHand->GetForwardVector()*1000,
 		ECC_Visibility,
 		TraceParams);
 	DrawDebugLine(GetWorld(),m_meshRightHand->GetComponentLocation(),
-		m_meshRightHand->GetComponentLocation() + m_meshRightHand->GetForwardVector()*100,FColor::Red,false,0.1);
+		m_meshRightHand->GetComponentLocation() + m_meshRightHand->GetForwardVector()*1000,FColor::Red,false,0.1);
 	if(HadHit)
 	{
+		
 		AInteractables* selected = Cast<AInteractables>(HitResult.Actor);
 		if(selected)
 		{
+			TPrequest = false;
 			APickupBase* Pickup = Cast<APickupBase>(HitResult.Actor);
 			if(Pickup&&Pickup->IsPickedUp)
 			{
@@ -66,7 +68,10 @@ void AcVRPlayerPawn::Tick(float DeltaTime)
 			{
 				if(CurHighlighted!=selected)
 				{
-					CurHighlighted->UnHighlighted();
+					if(CurHighlighted)
+					{
+						CurHighlighted->UnHighlighted();
+					}
 					selected->Highlighted();
 					CurHighlighted = selected;
 				}
@@ -81,6 +86,10 @@ void AcVRPlayerPawn::Tick(float DeltaTime)
 				CurHighlighted = nullptr;
 				IsHighlighting = false;
 			}
+			TpLocation = HitResult.Location;
+			TPrequest = true;
+			
+			
 		}
 		
 	}
@@ -94,6 +103,10 @@ void AcVRPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	InputComponent->BindAction("GripRight", IE_Pressed, this, &AcVRPlayerPawn::GripRightHand_Pressed);
 	InputComponent->BindAction("GripLeft", IE_Released, this, &AcVRPlayerPawn::GripLeftHand_Released);
 	InputComponent->BindAction("GripRight", IE_Released, this, &AcVRPlayerPawn::GripRightHand_Released);
+	//InputComponent->BindAction("GripLeft", IE_Pressed, this, &AcVRPlayerPawn::GripLeftHand_Pressed);
+	//InputComponent->BindAction("GripRight", IE_Pressed, this, &AcVRPlayerPawn::GripRightHand_Pressed);
+	//InputComponent->BindAction("GripLeft", IE_Released, this, &AcVRPlayerPawn::GripLeftHand_Released);
+	InputComponent->BindAction("TP", IE_Released, this, &AcVRPlayerPawn::TP_Player);
 	//InputComponent->BindAxis("MoveForward", this, &AcVRPlayerPawn::ForwardMove);
 	//InputComponent->BindAxis("MoveRight", this, &AcVRPlayerPawn::RightMove);
 
@@ -203,29 +216,34 @@ void AcVRPlayerPawn::SetHandAnimationBlueprint(USkeletalMeshComponent* a_refHand
 void AcVRPlayerPawn::ForwardMove(float Value)
 {
 	// find out which way is forward
-	FRotator Rotation = Controller->GetControlRotation();
+	//FRotator Rotation = Controller->GetControlRotation();
 	// Limit pitch when walking or falling
 	/*if ( CharacterMovement->IsMovingOnGround() || CharacterMovement->IsFalling() )
 	{
 	Rotation.Pitch = 0.0f;
 	}*/
 	// add movement in that direction
-	const FVector Direction = FRotationMatrix(Rotation).GetScaledAxis(EAxis::Y);
-	AddMovementInput(Direction, Value);
+	//const FVector Direction = FRotationMatrix(Rotation).GetScaledAxis(EAxis::Y);
+	
+	//FVector Direction =compVRCamera->GetForwardVector();
+	//UE_LOG(LogTemp, Log, TEXT("direction %s, forward %f"),*Direction.ToString(),Value );
+	//AddMovementInput(Direction, Value);
 }
 
 void AcVRPlayerPawn::RightMove(float Value)
 {
 	// find out which way is forward
-	FRotator Rotation = Controller->GetControlRotation();
+	//FRotator Rotation = Controller->GetControlRotation();
 	// Limit pitch when walking or falling
 	/*if ( CharacterMovement->IsMovingOnGround() || CharacterMovement->IsFalling() )
 	{
 	Rotation.Pitch = 0.0f;
 	}*/
 	// add movement in that direction
-	const FVector Direction = FRotationMatrix(Rotation).GetScaledAxis(EAxis::X);
-	AddMovementInput(Direction, Value);
+	//const FVector Direction = FRotationMatrix(Rotation).GetScaledAxis(EAxis::X);
+	//FVector Direction =compVRCamera->GetRightVector();
+	//UE_LOG(LogTemp, Log, TEXT("direction %s, right %f"),*Direction.ToString(),Value );
+	//AddMovementInput(Direction, Value);
 }
 
 /*
@@ -272,7 +290,10 @@ void AcVRPlayerPawn::GripLeftHand_Pressed_Implementation()
 	//if bool call targets clicked
 	if(IsHighlighting)
 	{
-		CurHighlighted->OnActivate();
+		if(CurHighlighted)
+		{
+			CurHighlighted->OnActivate();
+		}
 	}
 
 }
@@ -282,7 +303,10 @@ void AcVRPlayerPawn::GripRightHand_Pressed_Implementation()
 	//m_refRightHandAnimBP->SetGripValue(1.0f);
 	if(IsHighlighting)
 	{
-		CurHighlighted->OnActivate();
+		if(CurHighlighted)
+		{
+			CurHighlighted->OnActivate();
+		}	
 	}
 
 
@@ -291,6 +315,10 @@ void AcVRPlayerPawn::GripLeftHand_Released_Implementation()
 {
 	UE_LOG(LogTemp, Log, TEXT("Left Hand Grip Released"));
 	//m_refLeftHandAnimBP->SetGripValue(0.0f);
+	if(TPrequest)
+	{
+		RootComponent->SetWorldLocation(TpLocation);
+	}
 	//if bool call targets clicked
 	
 }
@@ -298,5 +326,14 @@ void AcVRPlayerPawn::GripRightHand_Released_Implementation()
 {
 	UE_LOG(LogTemp, Log, TEXT("Left Hand Grip Released"));
 	//m_refRightHandAnimBP->SetGripValue(0.0f);
+	
 
+}
+
+void AcVRPlayerPawn::TP_Player_Implementation()
+{
+	if(TPrequest)
+	{
+		RootComponent->SetWorldLocation(TpLocation);
+	}
 }

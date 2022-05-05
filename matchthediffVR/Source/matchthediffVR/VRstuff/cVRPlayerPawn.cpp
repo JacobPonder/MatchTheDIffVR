@@ -51,7 +51,8 @@ void AcVRPlayerPawn::Tick(float DeltaTime)
 		m_meshRightHand->GetComponentLocation() + m_meshRightHand->GetForwardVector()*100,
 		ECC_Visibility,
 		TraceParams);
-		
+	DrawDebugLine(GetWorld(),m_meshRightHand->GetComponentLocation(),
+		m_meshRightHand->GetComponentLocation() + m_meshRightHand->GetForwardVector()*100,FColor::Red,false,0.1);
 	if(HadHit)
 	{
 		AInteractables* selected = Cast<AInteractables>(HitResult.Actor);
@@ -93,8 +94,8 @@ void AcVRPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	InputComponent->BindAction("GripRight", IE_Pressed, this, &AcVRPlayerPawn::GripRightHand_Pressed);
 	InputComponent->BindAction("GripLeft", IE_Released, this, &AcVRPlayerPawn::GripLeftHand_Released);
 	InputComponent->BindAction("GripRight", IE_Released, this, &AcVRPlayerPawn::GripRightHand_Released);
-	InputComponent->BindAxis("MoveForward", this, &AcVRPlayerPawn::ForwardMove);
-	InputComponent->BindAxis("MoveRight", this, &AcVRPlayerPawn::RightMove);
+	//InputComponent->BindAxis("MoveForward", this, &AcVRPlayerPawn::ForwardMove);
+	//InputComponent->BindAxis("MoveRight", this, &AcVRPlayerPawn::RightMove);
 
 
 }
@@ -111,13 +112,13 @@ void AcVRPlayerPawn::CreateComponents()
 	USteamVRChaperoneComponent* chaperone = CreateDefaultSubobject<USteamVRChaperoneComponent>(TEXT("SteamVR Chaperone"));
 
 	//Create a scene component that will act as the parent for the camera. This might come in handy later.
-	USceneComponent* compVRCameraRoot = CreateDefaultSubobject<USceneComponent>(TEXT("VR Camera Root"));
+	compVRCameraRoot = CreateDefaultSubobject<USceneComponent>(TEXT("VR Camera Root"));
 	compVRCameraRoot->SetupAttachment(rootComponent);
 	compVRCameraRoot->SetRelativeLocationAndRotation(FVector::ZeroVector,FQuat::Identity);
 	compVRCameraRoot->SetRelativeScale3D(FVector::OneVector);
  
 	//Create a camera component and attach this to the camera root.
-	UCameraComponent* compVRCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("HMD Camera"));
+	compVRCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("HMD Camera"));
 	compVRCamera->SetupAttachment(compVRCameraRoot);
 	compVRCamera->SetRelativeLocationAndRotation(FVector::ZeroVector, FQuat::Identity);
 	compVRCamera->SetRelativeScale3D(FVector::OneVector);
@@ -199,6 +200,36 @@ void AcVRPlayerPawn::SetHandAnimationBlueprint(USkeletalMeshComponent* a_refHand
 	}*/
 }
 
+void AcVRPlayerPawn::ForwardMove(float Value)
+{
+	// find out which way is forward
+	FRotator Rotation = Controller->GetControlRotation();
+	// Limit pitch when walking or falling
+	/*if ( CharacterMovement->IsMovingOnGround() || CharacterMovement->IsFalling() )
+	{
+	Rotation.Pitch = 0.0f;
+	}*/
+	// add movement in that direction
+	const FVector Direction = FRotationMatrix(Rotation).GetScaledAxis(EAxis::Y);
+	AddMovementInput(Direction, Value);
+}
+
+void AcVRPlayerPawn::RightMove(float Value)
+{
+	// find out which way is forward
+	FRotator Rotation = Controller->GetControlRotation();
+	// Limit pitch when walking or falling
+	/*if ( CharacterMovement->IsMovingOnGround() || CharacterMovement->IsFalling() )
+	{
+	Rotation.Pitch = 0.0f;
+	}*/
+	// add movement in that direction
+	const FVector Direction = FRotationMatrix(Rotation).GetScaledAxis(EAxis::X);
+	AddMovementInput(Direction, Value);
+}
+
+/*
+
 void AcVRPlayerPawn::RightMove_Implementation(float Value)
 {
 	if ( (Controller != NULL) && (Value != 0.0f) )
@@ -209,7 +240,7 @@ void AcVRPlayerPawn::RightMove_Implementation(float Value)
 		/*if ( CharacterMovement->IsMovingOnGround() || CharacterMovement->IsFalling() )
 		{
 			Rotation.Pitch = 0.0f;
-		}*/
+		}
 		// add movement in that direction
 		const FVector Direction = FRotationMatrix(Rotation).GetScaledAxis(EAxis::X);
 		AddMovementInput(Direction, Value);
@@ -227,29 +258,17 @@ void AcVRPlayerPawn::ForwardMove_Implementation(float Value)
 		/*if ( CharacterMovement->IsMovingOnGround() || CharacterMovement->IsFalling() )
 		{
 		Rotation.Pitch = 0.0f;
-		}*/
+		}
 		// add movement in that direction
 		const FVector Direction = FRotationMatrix(Rotation).GetScaledAxis(EAxis::X);
 		AddMovementInput(Direction, Value);
 	}
 }
-
+*/
 void AcVRPlayerPawn::GripLeftHand_Pressed_Implementation()
 {
 	UE_LOG(LogTemp, Log, TEXT("Left Hand Grip Pressed"));
-	m_refLeftHandAnimBP->SetGripValue(1.0f);
-	//if bool call targets clicked
-}
-void AcVRPlayerPawn::GripRightHand_Pressed_Implementation()
-{
-	UE_LOG(LogTemp, Log, TEXT("Right Hand Grip Pressed"));
-	m_refRightHandAnimBP->SetGripValue(1.0f);
-
-}
-void AcVRPlayerPawn::GripLeftHand_Released_Implementation()
-{
-	UE_LOG(LogTemp, Log, TEXT("Left Hand Grip Released"));
-	m_refLeftHandAnimBP->SetGripValue(0.0f);
+	//m_refLeftHandAnimBP->SetGripValue(1.0f);
 	//if bool call targets clicked
 	if(IsHighlighting)
 	{
@@ -257,9 +276,27 @@ void AcVRPlayerPawn::GripLeftHand_Released_Implementation()
 	}
 
 }
+void AcVRPlayerPawn::GripRightHand_Pressed_Implementation()
+{
+	UE_LOG(LogTemp, Log, TEXT("Right Hand Grip Pressed"));
+	//m_refRightHandAnimBP->SetGripValue(1.0f);
+	if(IsHighlighting)
+	{
+		CurHighlighted->OnActivate();
+	}
+
+
+}
+void AcVRPlayerPawn::GripLeftHand_Released_Implementation()
+{
+	UE_LOG(LogTemp, Log, TEXT("Left Hand Grip Released"));
+	//m_refLeftHandAnimBP->SetGripValue(0.0f);
+	//if bool call targets clicked
+	
+}
 void AcVRPlayerPawn::GripRightHand_Released_Implementation()
 {
 	UE_LOG(LogTemp, Log, TEXT("Left Hand Grip Released"));
-	m_refRightHandAnimBP->SetGripValue(0.0f);
+	//m_refRightHandAnimBP->SetGripValue(0.0f);
 
 }

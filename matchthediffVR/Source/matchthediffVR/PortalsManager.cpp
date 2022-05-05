@@ -69,8 +69,8 @@ void APortalsManager::UpdatePortalLocations(int StageNumber)
 	switch (StageNumber)
 	{
 		case 1:
-			PuzzlePortal->SetWorldLocation(Stage2Puzzle);
-			SolutionPortal->SetWorldLocation(Stage2Solution);
+			PuzzlePortal->SetWorldLocation(Stage1Puzzle);
+			SolutionPortal->SetWorldLocation(Stage1Solution);
 			CurrentStage = StageNumber;
 			break;
 		case 2:

@@ -31,6 +31,8 @@ private:
 	bool IsHighlighting = false;
 	AInteractables* CurHighlighted;
 	void CacheHandAnimInstances();
+
+	
 	
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -41,7 +43,10 @@ public:
 	UcPlayerHandAnimBP* m_refLeftHandAnimBP;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UcPlayerHandAnimBP* m_refRightHandAnimBP;
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USceneComponent* compVRCameraRoot;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UCameraComponent* compVRCamera;
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -66,8 +71,8 @@ public:
 	void GripLeftHand_Released();
 	UFUNCTION(BlueprintNativeEvent, Category = "Input")
 	void GripRightHand_Released();
-	UFUNCTION(BlueprintNativeEvent, Category = "Input")
+	UFUNCTION(BlueprintCallable, Category = "Input")
 	void ForwardMove(float Value);
-	UFUNCTION(BlueprintNativeEvent, Category = "Input")
+	UFUNCTION(BlueprintCallable, Category = "Input")
 	void RightMove(float Value);
 };

@@ -32,8 +32,11 @@ private:
 	AInteractables* CurHighlighted;
 	FVector TpLocation;
 	bool TPrequest= false;
+	bool inPuzzleHouse = false;
 	void CacheHandAnimInstances();
+	
 
+	//other
 	
 	
 public:
@@ -49,6 +52,9 @@ public:
 	USceneComponent* compVRCameraRoot;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UCameraComponent* compVRCamera;
+
+	UPROPERTY(VisibleDefaultsOnly,BlueprintReadWrite, Category=Mesh)
+	FVector DistanceBetweenHouses = FVector(0,-5174.000000,0);
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -75,11 +81,13 @@ public:
 	void GripRightHand_Released();
 	UFUNCTION(BlueprintNativeEvent, Category = "Input")
 	void TP_Player();
-	
+	UFUNCTION(BlueprintNativeEvent, Category = "Input")
+	void TP_Houses();
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	void ForwardMove(float Value);
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	void RightMove(float Value);
 };
+
 
 

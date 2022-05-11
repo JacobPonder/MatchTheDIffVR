@@ -26,7 +26,6 @@ public:
 	/**optional*/
 	UPROPERTY(VisibleDefaultsOnly,BlueprintReadWrite, Category=Mesh)
 	UStaticMeshComponent* SolutionOutlineMesh;
-	//other
 	UPROPERTY(VisibleDefaultsOnly,BlueprintReadWrite, Category=Mesh)
 	FVector DistanceBetweenHouses = FVector(0,-5174.000000,0); 
 

@@ -13,6 +13,7 @@ AcVRPlayerPawn::AcVRPlayerPawn()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	CreateComponents();
+	
 }
 
 // Called when the game starts or when spawned
@@ -103,10 +104,12 @@ void AcVRPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	InputComponent->BindAction("GripRight", IE_Pressed, this, &AcVRPlayerPawn::GripRightHand_Pressed);
 	InputComponent->BindAction("GripLeft", IE_Released, this, &AcVRPlayerPawn::GripLeftHand_Released);
 	InputComponent->BindAction("GripRight", IE_Released, this, &AcVRPlayerPawn::GripRightHand_Released);
-	//InputComponent->BindAction("GripLeft", IE_Pressed, this, &AcVRPlayerPawn::GripLeftHand_Pressed);
-	//InputComponent->BindAction("GripRight", IE_Pressed, this, &AcVRPlayerPawn::GripRightHand_Pressed);
-	//InputComponent->BindAction("GripLeft", IE_Released, this, &AcVRPlayerPawn::GripLeftHand_Released);
+	//InputComponent->BindAction("unassigned left grip", IE_Pressed, this, );
+	//InputComponent->BindAction("TP", IE_Pressed, this, );
+	//InputComponent->BindAction("unassigned left grip", IE_Released, this, );
 	InputComponent->BindAction("TP", IE_Released, this, &AcVRPlayerPawn::TP_Player);
+	InputComponent->BindAction("Swap Houses", IE_Pressed, this, &AcVRPlayerPawn::TP_Houses);
+	//InputComponent->BindAction("Swap Houses", IE_Released, this, );
 	//InputComponent->BindAxis("MoveForward", this, &AcVRPlayerPawn::ForwardMove);
 	//InputComponent->BindAxis("MoveRight", this, &AcVRPlayerPawn::RightMove);
 
@@ -336,4 +339,15 @@ void AcVRPlayerPawn::TP_Player_Implementation()
 	{
 		RootComponent->SetWorldLocation(TpLocation);
 	}
+}
+void AcVRPlayerPawn::TP_Houses_Implementation()
+{
+	if(inPuzzleHouse)
+	{
+		RootComponent->SetWorldLocation(RootComponent->GetComponentLocation()-DistanceBetweenHouses);
+	} 
+	else
+	{
+		RootComponent->SetWorldLocation(RootComponent->GetComponentLocation()+DistanceBetweenHouses);
+	} 
 }

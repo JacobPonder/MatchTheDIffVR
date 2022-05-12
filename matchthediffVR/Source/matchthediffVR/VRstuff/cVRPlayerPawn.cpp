@@ -105,10 +105,10 @@ void AcVRPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	InputComponent->BindAction("GripLeft", IE_Released, this, &AcVRPlayerPawn::GripLeftHand_Released);
 	InputComponent->BindAction("GripRight", IE_Released, this, &AcVRPlayerPawn::GripRightHand_Released);
 	//InputComponent->BindAction("unassigned left grip", IE_Pressed, this, );
-	//InputComponent->BindAction("TP", IE_Pressed, this, );
+	InputComponent->BindAction("TP", IE_Pressed, this, );
 	//InputComponent->BindAction("unassigned left grip", IE_Released, this, );
 	InputComponent->BindAction("TP", IE_Released, this, &AcVRPlayerPawn::TP_Player);
-	InputComponent->BindAction("Swap Houses", IE_Pressed, this, &AcVRPlayerPawn::TP_Houses);
+	InputComponent->BindAction("Swap Houses", IE_Released, this, &AcVRPlayerPawn::TP_Houses);
 	//InputComponent->BindAction("Swap Houses", IE_Released, this, );
 	//InputComponent->BindAxis("MoveForward", this, &AcVRPlayerPawn::ForwardMove);
 	//InputComponent->BindAxis("MoveRight", this, &AcVRPlayerPawn::RightMove);

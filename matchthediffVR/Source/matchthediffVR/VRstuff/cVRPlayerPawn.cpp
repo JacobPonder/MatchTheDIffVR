@@ -291,6 +291,7 @@ void AcVRPlayerPawn::GripLeftHand_Pressed_Implementation()
 	UE_LOG(LogTemp, Log, TEXT("Left Hand Grip Pressed"));
 	//m_refLeftHandAnimBP->SetGripValue(1.0f);
 	//if bool call targets clicked
+	
 	if(IsHighlighting)
 	{
 		if(CurHighlighted)
@@ -335,6 +336,10 @@ void AcVRPlayerPawn::GripRightHand_Released_Implementation()
 
 void AcVRPlayerPawn::TP_Player_Implementation()
 {
+	if(GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 12.f, FColor::White, TEXT("moving"));
+	}
 	if(TPrequest)
 	{
 		RootComponent->SetWorldLocation(TpLocation);
@@ -342,6 +347,10 @@ void AcVRPlayerPawn::TP_Player_Implementation()
 }
 void AcVRPlayerPawn::TP_Houses_Implementation()
 {
+	if(GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 12.f, FColor::White, TEXT("house swap"));
+	}
 	if(inPuzzleHouse)
 	{
 		RootComponent->SetWorldLocation(RootComponent->GetComponentLocation()-DistanceBetweenHouses);

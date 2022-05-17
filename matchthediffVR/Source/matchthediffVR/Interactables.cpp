@@ -17,12 +17,13 @@ AInteractables::AInteractables()
 	{
 		OutlineMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("OutlineMesh"));
 		OutlineMesh->SetVisibility( false);
+		OutlineMesh->SetRelativeScale3D(FVector(1.1));
 		
 	}
 	if(!SolutionMesh)
 	{
 		SolutionMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SolutionMesh"));
-		SetActorLocation(BaseMesh->GetRelativeLocation()+DistanceBetweenHouses);
+		SolutionMesh->SetWorldLocation(BaseMesh->GetComponentLocation()+DistanceBetweenHouses);
 		
 	}
 	if(!SolutionOutlineMesh)
@@ -30,7 +31,8 @@ AInteractables::AInteractables()
 		
 		SolutionOutlineMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SolutionOutlineMesh"));
 		SolutionOutlineMesh->SetVisibility(false);
-		SetActorLocation(BaseMesh->GetComponentLocation()+DistanceBetweenHouses);
+		SolutionOutlineMesh->SetWorldLocation(BaseMesh->GetComponentLocation()+DistanceBetweenHouses);
+		SolutionOutlineMesh->SetRelativeScale3D(FVector(1.1));
 		
 	}
 }

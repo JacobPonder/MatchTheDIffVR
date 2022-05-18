@@ -32,7 +32,7 @@ private:
 	AInteractables* CurHighlighted;
 	FVector TpLocation;
 	bool TPrequest= false;
-	bool inPuzzleHouse = false;
+	
 	void CacheHandAnimInstances();
 	
 
@@ -52,7 +52,8 @@ public:
 	USceneComponent* compVRCameraRoot;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UCameraComponent* compVRCamera;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool inPuzzleHouse = false;
 	UPROPERTY(VisibleDefaultsOnly,BlueprintReadWrite, Category=Mesh)
 	FVector DistanceBetweenHouses = FVector(0,-5174.000000,0);
 	// Called every frame

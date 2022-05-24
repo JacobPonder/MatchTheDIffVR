@@ -5,6 +5,7 @@
 
 #include "matchthediffVR/Interactables.h"
 #include "matchthediffVR/PickupBase.h"
+#include "matchthediffVR/PuzzleBase.h"
 
 
 // Sets default values
@@ -60,13 +61,50 @@ void AcVRPlayerPawn::Tick(float DeltaTime)
 		AInteractables* selected = Cast<AInteractables>(HitResult.Actor);
 		if(selected)
 		{
+			if(GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(1, 12.f, FColor::White, TEXT("hit interactable"));
+			}
 			TPrequest = false;
 			APickupBase* Pickup = Cast<APickupBase>(HitResult.Actor);
-			if(Pickup&&Pickup->IsPickedUp)
+			APuzzleBase* Puzzle = Cast<APuzzleBase>(HitResult.Actor);
+			if(Pickup)
 			{
+				if(Pickup->IsPickedUp)
+				{
+					
+				}
+				else
+				{
+				
+					if(CurHighlighted!=selected)
+					{
+						if(CurHighlighted)
+						{
+							CurHighlighted->UnHighlighted();
+						}
+						selected->Highlighted();
+						CurHighlighted = selected;
+					}
+					IsHighlighting = true;
+				}
+			}
+			else if(Puzzle)
+			{
+					if(CurHighlighted!=selected)
+					{
+						if(CurHighlighted)
+						{
+							CurHighlighted->UnHighlighted();
+						}
+						selected->Highlighted();
+						CurHighlighted = selected;
+					}
+					IsHighlighting = true;
 			}
 			else
 			{
+				//if not puzzle or pickup
 				if(CurHighlighted!=selected)
 				{
 					if(CurHighlighted)
@@ -77,7 +115,9 @@ void AcVRPlayerPawn::Tick(float DeltaTime)
 					CurHighlighted = selected;
 				}
 				IsHighlighting = true;
+				
 			}
+			
 		}
 		else
 		{
@@ -216,102 +256,29 @@ void AcVRPlayerPawn::SetHandAnimationBlueprint(USkeletalMeshComponent* a_refHand
 	}*/
 }
 
-void AcVRPlayerPawn::ForwardMove(float Value)
-{
-	// find out which way is forward
-	//FRotator Rotation = Controller->GetControlRotation();
-	// Limit pitch when walking or falling
-	/*if ( CharacterMovement->IsMovingOnGround() || CharacterMovement->IsFalling() )
-	{
-	Rotation.Pitch = 0.0f;
-	}*/
-	// add movement in that direction
-	//const FVector Direction = FRotationMatrix(Rotation).GetScaledAxis(EAxis::Y);
-	
-	//FVector Direction =compVRCamera->GetForwardVector();
-	//UE_LOG(LogTemp, Log, TEXT("direction %s, forward %f"),*Direction.ToString(),Value );
-	//AddMovementInput(Direction, Value);
-}
 
-void AcVRPlayerPawn::RightMove(float Value)
-{
-	// find out which way is forward
-	//FRotator Rotation = Controller->GetControlRotation();
-	// Limit pitch when walking or falling
-	/*if ( CharacterMovement->IsMovingOnGround() || CharacterMovement->IsFalling() )
-	{
-	Rotation.Pitch = 0.0f;
-	}*/
-	// add movement in that direction
-	//const FVector Direction = FRotationMatrix(Rotation).GetScaledAxis(EAxis::X);
-	//FVector Direction =compVRCamera->GetRightVector();
-	//UE_LOG(LogTemp, Log, TEXT("direction %s, right %f"),*Direction.ToString(),Value );
-	//AddMovementInput(Direction, Value);
-}
 
-/*
-
-void AcVRPlayerPawn::RightMove_Implementation(float Value)
-{
-	if ( (Controller != NULL) && (Value != 0.0f) )
-	{
-		// find out which way is forward
-		FRotator Rotation = Controller->GetControlRotation();
-		// Limit pitch when walking or falling
-		/*if ( CharacterMovement->IsMovingOnGround() || CharacterMovement->IsFalling() )
-		{
-			Rotation.Pitch = 0.0f;
-		}
-		// add movement in that direction
-		const FVector Direction = FRotationMatrix(Rotation).GetScaledAxis(EAxis::X);
-		AddMovementInput(Direction, Value);
-	}
-}
-	
-
-void AcVRPlayerPawn::ForwardMove_Implementation(float Value)
-{
-	if ( (Controller != NULL) && (Value != 0.0f) )
-	{
-		// find out which way is forward
-		FRotator Rotation = Controller->GetControlRotation();
-		// Limit pitch when walking or falling
-		/*if ( CharacterMovement->IsMovingOnGround() || CharacterMovement->IsFalling() )
-		{
-		Rotation.Pitch = 0.0f;
-		}
-		// add movement in that direction
-		const FVector Direction = FRotationMatrix(Rotation).GetScaledAxis(EAxis::X);
-		AddMovementInput(Direction, Value);
-	}
-}
-*/
 void AcVRPlayerPawn::GripLeftHand_Pressed_Implementation()
 {
 	UE_LOG(LogTemp, Log, TEXT("Left Hand Grip Pressed"));
 	//m_refLeftHandAnimBP->SetGripValue(1.0f);
 	//if bool call targets clicked
-	
-	if(IsHighlighting)
+	if(GEngine)
 	{
-		if(CurHighlighted)
-		{
-			CurHighlighted->OnActivate();
-		}
+		GEngine->AddOnScreenDebugMessage(-1, 12.f, FColor::Red, TEXT("click "));
 	}
+	
 
 }
 void AcVRPlayerPawn::GripRightHand_Pressed_Implementation()
 {
 	UE_LOG(LogTemp, Log, TEXT("Right Hand Grip Pressed"));
 	//m_refRightHandAnimBP->SetGripValue(1.0f);
-	if(IsHighlighting)
+	if(GEngine)
 	{
-		if(CurHighlighted)
-		{
-			CurHighlighted->OnActivate();
-		}	
+		GEngine->AddOnScreenDebugMessage(-1, 12.f, FColor::Red, TEXT("click "));
 	}
+	
 
 
 }
@@ -319,9 +286,17 @@ void AcVRPlayerPawn::GripLeftHand_Released_Implementation()
 {
 	UE_LOG(LogTemp, Log, TEXT("Left Hand Grip Released"));
 	//m_refLeftHandAnimBP->SetGripValue(0.0f);
-	if(TPrequest)
+	if(IsHighlighting)
 	{
-		RootComponent->SetWorldLocation(TpLocation);
+		
+		if(GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 12.f, FColor::Red, TEXT("click interactable"));
+		}
+		if(CurHighlighted)
+		{
+			CurHighlighted->OnActivate();
+		}	
 	}
 	//if bool call targets clicked
 	
@@ -330,16 +305,24 @@ void AcVRPlayerPawn::GripRightHand_Released_Implementation()
 {
 	UE_LOG(LogTemp, Log, TEXT("Left Hand Grip Released"));
 	//m_refRightHandAnimBP->SetGripValue(0.0f);
-	
+	if(IsHighlighting)
+	{
+		
+		if(GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 12.f, FColor::Red, TEXT("click interactable"));
+		}
+		if(CurHighlighted)
+		{
+			CurHighlighted->OnActivate();
+		}	
+	}
 
 }
 
 void AcVRPlayerPawn::TP_Player_Implementation()
 {
-	if(GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 12.f, FColor::White, TEXT("moving"));
-	}
+	
 	if(TPrequest)
 	{
 		RootComponent->SetWorldLocation(TpLocation);
@@ -347,16 +330,15 @@ void AcVRPlayerPawn::TP_Player_Implementation()
 }
 void AcVRPlayerPawn::TP_Houses_Implementation()
 {
-	if(GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 12.f, FColor::White, TEXT("house swap"));
-	}
+	
 	if(inPuzzleHouse)
 	{
-		RootComponent->SetWorldLocation(RootComponent->GetComponentLocation()-DistanceBetweenHouses);
+		RootComponent->SetWorldLocation(RootComponent->GetComponentLocation()+DistanceBetweenHouses);
+		inPuzzleHouse =false;
 	} 
 	else
 	{
-		RootComponent->SetWorldLocation(RootComponent->GetComponentLocation()+DistanceBetweenHouses);
+		RootComponent->SetWorldLocation(RootComponent->GetComponentLocation()-DistanceBetweenHouses);
+		inPuzzleHouse = true;
 	} 
 }

@@ -53,7 +53,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UCameraComponent* compVRCamera;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool inPuzzleHouse = false;
+	bool inPuzzleHouse = true;
 	UPROPERTY(VisibleDefaultsOnly,BlueprintReadWrite, Category=Mesh)
 	FVector DistanceBetweenHouses = FVector(0,-5174.000000,0);
 	// Called every frame
@@ -84,10 +84,6 @@ public:
 	void TP_Player();
 	UFUNCTION(BlueprintNativeEvent, Category = "Input")
 	void TP_Houses();
-	UFUNCTION(BlueprintCallable, Category = "Input")
-	void ForwardMove(float Value);
-	UFUNCTION(BlueprintCallable, Category = "Input")
-	void RightMove(float Value);
 };
 
 

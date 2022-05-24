@@ -28,6 +28,28 @@
 							"output": "/actions/main/in/GripRight"
 						}
 					}
+				},
+				{
+					"mode": "trigger",
+					"path": "/user/hand/right/input/grip",
+					"inputs":
+					{
+						"click":
+						{
+							"output": "/actions/main/in/TP"
+						}
+					}
+				},
+				{
+					"mode": "button",
+					"path": "/user/hand/left/input/y",
+					"inputs":
+					{
+						"click":
+						{
+							"output": "/actions/main/in/Swap Houses"
+						}
+					}
 				}
 			],
 			"poses": [
@@ -63,5 +85,5 @@
 			]
 		}
 	},
-	"description": ""
+	"description": "matchthediffVR-15973114"
 }

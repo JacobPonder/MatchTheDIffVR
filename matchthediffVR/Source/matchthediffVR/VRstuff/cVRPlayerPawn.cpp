@@ -2,6 +2,8 @@
 
 
 #include "cVRPlayerPawn.h"
+#include "Kismet/GameplayStatics.h"
+#include <dsound.h>
 
 #include "matchthediffVR/Interactables.h"
 #include "matchthediffVR/PickupBase.h"
@@ -61,10 +63,7 @@ void AcVRPlayerPawn::Tick(float DeltaTime)
 		AInteractables* selected = Cast<AInteractables>(HitResult.Actor);
 		if(selected)
 		{
-			if(GEngine)
-			{
-				GEngine->AddOnScreenDebugMessage(1, 12.f, FColor::White, TEXT("hit interactable"));
-			}
+			
 			TPrequest = false;
 			APickupBase* Pickup = Cast<APickupBase>(HitResult.Actor);
 			APuzzleBase* Puzzle = Cast<APuzzleBase>(HitResult.Actor);
@@ -289,10 +288,7 @@ void AcVRPlayerPawn::GripLeftHand_Released_Implementation()
 	if(IsHighlighting)
 	{
 		
-		if(GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 12.f, FColor::Red, TEXT("click interactable"));
-		}
+		
 		if(CurHighlighted)
 		{
 			CurHighlighted->OnActivate();
@@ -308,10 +304,7 @@ void AcVRPlayerPawn::GripRightHand_Released_Implementation()
 	if(IsHighlighting)
 	{
 		
-		if(GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 12.f, FColor::Red, TEXT("click interactable"));
-		}
+		
 		if(CurHighlighted)
 		{
 			CurHighlighted->OnActivate();
@@ -330,7 +323,7 @@ void AcVRPlayerPawn::TP_Player_Implementation()
 }
 void AcVRPlayerPawn::TP_Houses_Implementation()
 {
-	
+	//UGameplayStatics::PlaySoundAtLocation(GetWorld(),'/Game/OtherAssets/MYmaterials/250129__tim-kahn__portal01.250129__tim-kahn__portal01',FVector(0, 0, 0));
 	if(inPuzzleHouse)
 	{
 		RootComponent->SetWorldLocation(RootComponent->GetComponentLocation()+DistanceBetweenHouses);

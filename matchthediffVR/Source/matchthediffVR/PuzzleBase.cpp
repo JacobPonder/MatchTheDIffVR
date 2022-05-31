@@ -6,4 +6,5 @@
 
 APuzzleBase::APuzzleBase()
 {
+	PrimaryActorTick.bCanEverTick = true;
 }

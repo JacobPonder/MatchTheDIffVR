@@ -5,4 +5,5 @@
 
 APickupBase::APickupBase()
 {
+	PrimaryActorTick.bCanEverTick = true;
 }

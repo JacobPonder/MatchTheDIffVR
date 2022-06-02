@@ -16,7 +16,7 @@ AInteractables::AInteractables()
 	if(!OutlineMesh)
 	{
 		OutlineMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("OutlineMesh"));
-		
+		OutlineMesh->AttachToComponent(BaseMesh,FAttachmentTransformRules::KeepRelativeTransform);
 		
 		OutlineMesh->SetRelativeScale3D(FVector(1.0));
 		
@@ -57,11 +57,16 @@ void AInteractables::Tick(float DeltaTime)
 
 void AInteractables::Highlighted()
 {
+	
 	OutlineMesh->SetVisibility(true);
+	
 }
 
 void AInteractables::UnHighlighted()
 {
+	
 	OutlineMesh->SetVisibility(false);
+
+	
 }
 

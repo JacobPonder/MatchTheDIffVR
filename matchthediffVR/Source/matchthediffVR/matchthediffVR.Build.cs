@@ -8,7 +8,7 @@ public class matchthediffVR : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "SteamVR"});
+		PublicDependencyModuleNames.AddRange(new string[] { "UMG","Core", "CoreUObject", "Engine", "InputCore", "SteamVR"});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "HeadMountedDisplay", "SteamVR" });
 

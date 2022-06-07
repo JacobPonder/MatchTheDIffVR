@@ -5,6 +5,8 @@
 #include "Kismet/GameplayStatics.h"
 #include <dsound.h>
 
+
+#include "AssetSelection.h"
 #include "matchthediffVR/Interactables.h"
 #include "matchthediffVR/PickupBase.h"
 #include "matchthediffVR/PuzzleBase.h"
@@ -24,6 +26,9 @@ void AcVRPlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
 	//CreateComponents();
+	
+	
+	menuInteract->bShowDebug = true;
 }
 
 void AcVRPlayerPawn::CacheHandAnimInstances()
@@ -178,6 +183,8 @@ void AcVRPlayerPawn::CreateComponents()
 	compVRCamera->SetRelativeLocationAndRotation(FVector::ZeroVector, FQuat::Identity);
 	compVRCamera->SetRelativeScale3D(FVector::OneVector);
 
+
+	
 	CreateHandController(compVRCameraRoot, "MC_Left", FXRMotionControllerBase::LeftHandSourceId);
 	CreateHandController(compVRCameraRoot, "MC_Right",FXRMotionControllerBase::RightHandSourceId);
 
@@ -187,8 +194,22 @@ void AcVRPlayerPawn::CreateHandController(USceneComponent* a_compParent, FName a
 {
 	UMotionControllerComponent* compMotionController = CreateDefaultSubobject<UMotionControllerComponent>(a_strDisplayName);
 	compMotionController->SetRelativeLocationAndRotation(FVector::ZeroVector, FQuat::Identity);
-	compMotionController->SetRelativeScale3D(FVector::OneVector);
- 
+	
+	if (a_nameHandType == FXRMotionControllerBase::LeftHandSourceId)
+	{
+		compMotionController->SetRelativeScale3D(FVector(1,1,-1));
+		
+		
+	}
+	else
+	{
+		compMotionController->SetRelativeScale3D(FVector::OneVector);
+		//create a widget interaction to interact with the menu UI
+		menuInteract =  CreateDefaultSubobject<UWidgetInteractionComponent>(TEXT("UI Interaction"));
+		menuInteract->SetupAttachment(compMotionController);
+		menuInteract->InteractionDistance = 500;
+		menuInteract->PointerIndex=1.0;
+	}
 	compMotionController->MotionSource = a_nameHandType;
 	compMotionController->SetupAttachment(a_compParent);
 	//Create the hand mesh for visualization
@@ -198,6 +219,7 @@ void AcVRPlayerPawn::CreateHandController(USceneComponent* a_compParent, FName a
 		m_meshLeftHand = refHandMesh;
 	else
 		m_meshRightHand = refHandMesh;
+	
 }
 
 
@@ -264,20 +286,18 @@ void AcVRPlayerPawn::GripLeftHand_Pressed_Implementation()
 	//if bool call targets clicked
 	if(GEngine)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 12.f, FColor::Red, TEXT("click "));
+		GEngine->AddOnScreenDebugMessage(-1, 12.f, FColor::Purple, TEXT("click "));
 	}
-	
+	//menuInteract->PressPointerKey(EKeys::LeftMouseButton);
+	//menuInteract->PressAndReleaseKey(EKeys::LeftMouseButton);
 
 }
 void AcVRPlayerPawn::GripRightHand_Pressed_Implementation()
 {
 	UE_LOG(LogTemp, Log, TEXT("Right Hand Grip Pressed"));
 	//m_refRightHandAnimBP->SetGripValue(1.0f);
-	if(GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 12.f, FColor::Red, TEXT("click "));
-	}
 	
+	menuInteract->PressPointerKey(EKeys::LeftMouseButton);
 
 
 }
@@ -285,6 +305,7 @@ void AcVRPlayerPawn::GripLeftHand_Released_Implementation()
 {
 	UE_LOG(LogTemp, Log, TEXT("Left Hand Grip Released"));
 	//m_refLeftHandAnimBP->SetGripValue(0.0f);
+	
 	if(IsHighlighting)
 	{
 		
@@ -294,6 +315,10 @@ void AcVRPlayerPawn::GripLeftHand_Released_Implementation()
 			CurHighlighted->OnActivate();
 		}	
 	}
+	
+	//menuInteract->PressAndReleaseKey(EKeys::LeftMouseButton);
+	
+	//menuInteract->ReleasePointerKey(EKeys::LeftMouseButton);
 	//if bool call targets clicked
 	
 }
@@ -310,7 +335,7 @@ void AcVRPlayerPawn::GripRightHand_Released_Implementation()
 			CurHighlighted->OnActivate();
 		}	
 	}
-
+	menuInteract->ReleasePointerKey(EKeys::LeftMouseButton);
 }
 
 void AcVRPlayerPawn::TP_Player_Implementation()

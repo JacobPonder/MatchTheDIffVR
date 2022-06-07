@@ -10,9 +10,14 @@
 #include "SteamVRChaperoneComponent.h"
 #include "MotionControllerComponent.h"
 #include "XRMotionControllerBase.h"
+#include "Components/WidgetInteractionComponent.h"
 #include "matchthediffVR/Interactables.h"
-
+#include "Blueprint/UserWidget.h"
 #include "cVRPlayerPawn.generated.h"
+
+
+
+	
 
 UCLASS()
 class MATCHTHEDIFFVR_API AcVRPlayerPawn : public APawn
@@ -29,13 +34,13 @@ protected:
 private:
 	
 	bool IsHighlighting = false;
-	AInteractables* CurHighlighted;
+ 	AInteractables* CurHighlighted;
 	FVector TpLocation;
 	bool TPrequest= false;
 	
 	void CacheHandAnimInstances();
 	
-
+	
 	//other
 	
 	
@@ -56,6 +61,8 @@ public:
 	bool inPuzzleHouse = true;
 	UPROPERTY(VisibleDefaultsOnly,BlueprintReadWrite, Category=Mesh)
 	FVector DistanceBetweenHouses = FVector(0,-5174.000000,0);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UWidgetInteractionComponent* menuInteract;
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -66,6 +73,7 @@ public:
 	void CreateComponents();
 
 	void CreateHandController(USceneComponent* a_compParent, FName a_strDisplayName, FName a_nameHandType);
+
 
 	
 	USkeletalMeshComponent* CreateHandMesh(UMotionControllerComponent* a_compParent, FName a_strDisplayName,FName a_nameHandType);

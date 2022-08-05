@@ -53,15 +53,16 @@ void AcVRPlayerPawn::Tick(float DeltaTime)
 	TraceParams.AddIgnoredActor(this);	// owning player of mod is ignored
 	// initialize hit info
 	FHitResult HitResult;
+	FVector end = m_meshRightHand->GetForwardVector() * 1000;
 	// do trace to muzzle to fire direction * laser range
 	bool HadHit = GetWorld()->LineTraceSingleByChannel(
 		HitResult,
 		m_meshRightHand->GetComponentLocation(),
-		m_meshRightHand->GetComponentLocation() + m_meshRightHand->GetForwardVector()*1000,
+		m_meshRightHand->GetComponentLocation() + end,
 		ECC_Visibility,
 		TraceParams);
 	DrawDebugLine(GetWorld(),m_meshRightHand->GetComponentLocation(),
-		m_meshRightHand->GetComponentLocation() + m_meshRightHand->GetForwardVector()*1000,FColor::Red,false,0.1);
+		m_meshRightHand->GetComponentLocation() + end/* HitResult.Location*/,FColor::Red,false,0.1);
 	if(HadHit)
 	{
 		

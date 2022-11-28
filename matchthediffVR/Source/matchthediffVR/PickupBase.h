@@ -19,4 +19,7 @@ class MATCHTHEDIFFVR_API APickupBase : public AInteractables
 
 	UPROPERTY(BlueprintReadWrite)
 	bool IsPickedUp;
+
+	UPROPERTY(BlueprintReadWrite)
+	UTexture2D* InventoryImage; ;
 };

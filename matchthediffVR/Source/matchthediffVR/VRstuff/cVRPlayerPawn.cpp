@@ -313,6 +313,7 @@ void AcVRPlayerPawn::GripLeftHand_Released_Implementation()
 		
 		if(CurHighlighted)
 		{
+			
 			CurHighlighted->OnActivate();
 		}	
 	}

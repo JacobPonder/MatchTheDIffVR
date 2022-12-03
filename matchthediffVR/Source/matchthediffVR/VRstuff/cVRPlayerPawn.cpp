@@ -149,6 +149,7 @@ void AcVRPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	InputComponent->BindAction("GripRight", IE_Pressed, this, &AcVRPlayerPawn::GripRightHand_Pressed);
 	InputComponent->BindAction("GripLeft", IE_Released, this, &AcVRPlayerPawn::GripLeftHand_Released);
 	InputComponent->BindAction("GripRight", IE_Released, this, &AcVRPlayerPawn::GripRightHand_Released);
+	InputComponent->BindAction("return to menu(tmp)", IE_Released, this, &AcVRPlayerPawn::Return_to_main);
 	//InputComponent->BindAction("unassigned left grip", IE_Pressed, this, );
 	//InputComponent->BindAction("TP", IE_Pressed, this, );
 	//InputComponent->BindAction("unassigned left grip", IE_Released, this, );
@@ -156,7 +157,7 @@ void AcVRPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	InputComponent->BindAction("Swap Houses", IE_Released, this, &AcVRPlayerPawn::TP_Houses);
 	//InputComponent->BindAction("Swap Houses", IE_Released, this, );
 	//InputComponent->BindAxis("MoveForward", this, &AcVRPlayerPawn::ForwardMove);
-	//InputComponent->BindAxis("MoveRight", this, &AcVRPlayerPawn::RightMove);
+	
 
 
 }
@@ -361,4 +362,9 @@ void AcVRPlayerPawn::TP_Houses_Implementation()
 		RootComponent->SetWorldLocation(RootComponent->GetComponentLocation()-DistanceBetweenHouses);
 		inPuzzleHouse = true;
 	} 
+}
+
+void AcVRPlayerPawn::Return_to_main()
+{
+	UGameplayStatics::OpenLevel(this, "MainMenu1");
 }

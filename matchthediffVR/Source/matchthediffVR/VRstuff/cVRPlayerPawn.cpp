@@ -364,7 +364,7 @@ void AcVRPlayerPawn::TP_Houses_Implementation()
 	} 
 }
 
-void AcVRPlayerPawn::Return_to_main()
+void AcVRPlayerPawn::Return_to_main_Implementation()
 {
 	UGameplayStatics::OpenLevel(this, "MainMenu1");
 }

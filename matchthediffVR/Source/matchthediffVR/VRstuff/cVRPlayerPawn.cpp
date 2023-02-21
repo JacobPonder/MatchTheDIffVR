@@ -6,7 +6,7 @@
 #include <dsound.h>
 
 
-#include "AssetSelection.h"
+//#include "AssetSelection.h"
 #include "matchthediffVR/Interactables.h"
 #include "matchthediffVR/PickupBase.h"
 #include "matchthediffVR/PuzzleBase.h"

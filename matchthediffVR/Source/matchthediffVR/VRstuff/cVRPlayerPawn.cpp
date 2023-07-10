@@ -352,16 +352,19 @@ void AcVRPlayerPawn::TP_Player_Implementation()
 void AcVRPlayerPawn::TP_Houses_Implementation()
 {
 	//UGameplayStatics::PlaySoundAtLocation(GetWorld(),'/Game/OtherAssets/MYmaterials/250129__tim-kahn__portal01.250129__tim-kahn__portal01',FVector(0, 0, 0));
-	if(inPuzzleHouse)
+	if (UGameplayStatics::GetCurrentLevelName(this) != "MainMenu1") 
 	{
-		RootComponent->SetWorldLocation(RootComponent->GetComponentLocation()+DistanceBetweenHouses);
-		inPuzzleHouse =false;
-	} 
-	else
-	{
-		RootComponent->SetWorldLocation(RootComponent->GetComponentLocation()-DistanceBetweenHouses);
-		inPuzzleHouse = true;
-	} 
+		if (inPuzzleHouse)
+		{
+			RootComponent->SetWorldLocation(RootComponent->GetComponentLocation() + DistanceBetweenHouses);
+			inPuzzleHouse = false;
+		}
+		else
+		{
+			RootComponent->SetWorldLocation(RootComponent->GetComponentLocation() - DistanceBetweenHouses);
+			inPuzzleHouse = true;
+		}
+	}
 }
 
 void AcVRPlayerPawn::Return_to_main_Implementation()

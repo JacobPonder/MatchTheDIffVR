@@ -11,7 +11,7 @@ AInteractables::AInteractables()
 	if(!BaseMesh)
 	{
 		BaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BaseMesh"));
-		
+		SetRootComponent(BaseMesh);
 	}
 	if(!OutlineMesh)
 	{

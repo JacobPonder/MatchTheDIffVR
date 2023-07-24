@@ -15,9 +15,10 @@ class MATCHTHEDIFFVR_API APuzzleBase : public AInteractables
 	GENERATED_BODY()
 	public:
 	APuzzleBase();
-	/**Identifier to determine what the solution checker checks*/
+	//used by the solution checker to indicate wether or not the puzzle needs to be looked at for the current stage. 
 	UPROPERTY(BlueprintReadWrite)
 	int StageNumber;
+	//used by the solution checker to let it know when the puzzle is its correct state
 	UPROPERTY(BlueprintReadWrite)
 	bool isCorrect;
 };

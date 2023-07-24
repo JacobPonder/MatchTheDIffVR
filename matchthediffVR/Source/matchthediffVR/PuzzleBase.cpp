@@ -2,7 +2,7 @@
 
 
 #include "PuzzleBase.h"
-
+//This is the base for all Puzzles in the game. 
 
 APuzzleBase::APuzzleBase()
 {

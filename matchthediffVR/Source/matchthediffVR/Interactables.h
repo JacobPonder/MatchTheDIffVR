@@ -16,16 +16,21 @@ public:
 	AInteractables();
 	//meshes
 	UPROPERTY(VisibleDefaultsOnly,BlueprintReadWrite, Category=Mesh)
+	//base object
 	UStaticMeshComponent* BaseMesh;
 	
 	UPROPERTY(VisibleDefaultsOnly,BlueprintReadWrite, Category=Mesh)
+	//outline for base object
 	UStaticMeshComponent* OutlineMesh;
 	
 	UPROPERTY(VisibleDefaultsOnly,BlueprintReadWrite, Category=Mesh)
+	//clone of base object, spawned on the solution area
 	UStaticMeshComponent* SolutionMesh;
 	/**optional*/
 	UPROPERTY(VisibleDefaultsOnly,BlueprintReadWrite, Category=Mesh)
+	//outline for solution object
 	UStaticMeshComponent* SolutionOutlineMesh;
+	//vector used for to seperate the base and solution meshes
 	UPROPERTY(VisibleDefaultsOnly,BlueprintReadWrite, Category=Mesh)
 	FVector DistanceBetweenHouses = FVector(0,-5174.000000,0); 
 
@@ -36,7 +41,8 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	//highlight and  return self
+	//highlight and  return self,
+	//these let the player know when they are highlighting an interactible object
 	void Highlighted();
 
 	void UnHighlighted();

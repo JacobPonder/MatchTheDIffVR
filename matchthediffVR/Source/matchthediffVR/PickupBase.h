@@ -15,11 +15,10 @@ class MATCHTHEDIFFVR_API APickupBase : public AInteractables
 	GENERATED_BODY()
 	public:
 	APickupBase();
-	/**Identifier to determine what the solution checker checks*/
-
+	//makes the item "dissapear" when picked up
 	UPROPERTY(BlueprintReadWrite)
 	bool IsPickedUp;
-
+	// image, associated with the pickup,that lets the player know theyve picked the item up
 	UPROPERTY(BlueprintReadWrite)
 	UTexture2D* InventoryImage; ;
 };

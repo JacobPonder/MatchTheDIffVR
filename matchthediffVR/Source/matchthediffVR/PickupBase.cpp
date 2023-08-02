@@ -2,6 +2,7 @@
 
 
 #include "PickupBase.h"
+//This is the base for all pickups in the game. 
 
 APickupBase::APickupBase()
 {

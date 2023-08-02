@@ -92,6 +92,8 @@ public:
 	void TP_Player();
 	UFUNCTION(BlueprintNativeEvent, Category = "Input")
 	void TP_Houses();
+	UFUNCTION(BlueprintNativeEvent, Category = "Input")
+	void Return_to_main();
 };
 
 

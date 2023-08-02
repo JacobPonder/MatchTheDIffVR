@@ -6,7 +6,7 @@
 #include <dsound.h>
 
 
-#include "AssetSelection.h"
+//#include "AssetSelection.h"
 #include "matchthediffVR/Interactables.h"
 #include "matchthediffVR/PickupBase.h"
 #include "matchthediffVR/PuzzleBase.h"
@@ -53,15 +53,16 @@ void AcVRPlayerPawn::Tick(float DeltaTime)
 	TraceParams.AddIgnoredActor(this);	// owning player of mod is ignored
 	// initialize hit info
 	FHitResult HitResult;
+	FVector end = m_meshRightHand->GetForwardVector() * 1000;
 	// do trace to muzzle to fire direction * laser range
 	bool HadHit = GetWorld()->LineTraceSingleByChannel(
 		HitResult,
 		m_meshRightHand->GetComponentLocation(),
-		m_meshRightHand->GetComponentLocation() + m_meshRightHand->GetForwardVector()*1000,
+		m_meshRightHand->GetComponentLocation() + end,
 		ECC_Visibility,
 		TraceParams);
 	DrawDebugLine(GetWorld(),m_meshRightHand->GetComponentLocation(),
-		m_meshRightHand->GetComponentLocation() + m_meshRightHand->GetForwardVector()*1000,FColor::Red,false,0.1);
+		m_meshRightHand->GetComponentLocation() + end/* HitResult.Location*/,FColor::Red,false,0.1);
 	if(HadHit)
 	{
 		
@@ -148,6 +149,7 @@ void AcVRPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	InputComponent->BindAction("GripRight", IE_Pressed, this, &AcVRPlayerPawn::GripRightHand_Pressed);
 	InputComponent->BindAction("GripLeft", IE_Released, this, &AcVRPlayerPawn::GripLeftHand_Released);
 	InputComponent->BindAction("GripRight", IE_Released, this, &AcVRPlayerPawn::GripRightHand_Released);
+	//InputComponent->BindAction("return to menu(tmp)", IE_Released, this, &AcVRPlayerPawn::Return_to_main);
 	//InputComponent->BindAction("unassigned left grip", IE_Pressed, this, );
 	//InputComponent->BindAction("TP", IE_Pressed, this, );
 	//InputComponent->BindAction("unassigned left grip", IE_Released, this, );
@@ -155,7 +157,7 @@ void AcVRPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	InputComponent->BindAction("Swap Houses", IE_Released, this, &AcVRPlayerPawn::TP_Houses);
 	//InputComponent->BindAction("Swap Houses", IE_Released, this, );
 	//InputComponent->BindAxis("MoveForward", this, &AcVRPlayerPawn::ForwardMove);
-	//InputComponent->BindAxis("MoveRight", this, &AcVRPlayerPawn::RightMove);
+	
 
 
 }
@@ -312,6 +314,7 @@ void AcVRPlayerPawn::GripLeftHand_Released_Implementation()
 		
 		if(CurHighlighted)
 		{
+			
 			CurHighlighted->OnActivate();
 		}	
 	}
@@ -349,14 +352,22 @@ void AcVRPlayerPawn::TP_Player_Implementation()
 void AcVRPlayerPawn::TP_Houses_Implementation()
 {
 	//UGameplayStatics::PlaySoundAtLocation(GetWorld(),'/Game/OtherAssets/MYmaterials/250129__tim-kahn__portal01.250129__tim-kahn__portal01',FVector(0, 0, 0));
-	if(inPuzzleHouse)
+	if (UGameplayStatics::GetCurrentLevelName(this) != "MainMenu1") 
 	{
-		RootComponent->SetWorldLocation(RootComponent->GetComponentLocation()+DistanceBetweenHouses);
-		inPuzzleHouse =false;
-	} 
-	else
-	{
-		RootComponent->SetWorldLocation(RootComponent->GetComponentLocation()-DistanceBetweenHouses);
-		inPuzzleHouse = true;
-	} 
+		if (inPuzzleHouse)
+		{
+			RootComponent->SetWorldLocation(RootComponent->GetComponentLocation() + DistanceBetweenHouses);
+			inPuzzleHouse = false;
+		}
+		else
+		{
+			RootComponent->SetWorldLocation(RootComponent->GetComponentLocation() - DistanceBetweenHouses);
+			inPuzzleHouse = true;
+		}
+	}
+}
+
+void AcVRPlayerPawn::Return_to_main_Implementation()
+{
+	//UGameplayStatics::OpenLevel(this, "MainMenu1");
 }

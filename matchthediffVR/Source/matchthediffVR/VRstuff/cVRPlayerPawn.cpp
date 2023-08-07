@@ -50,19 +50,24 @@ void AcVRPlayerPawn::Tick(float DeltaTime)
 
 	// trace params required for line trace, ignore actor prevents from hitting itself
 	FCollisionQueryParams TraceParams;
-	TraceParams.AddIgnoredActor(this);	// owning player of mod is ignored
+	TraceParams.AddIgnoredActor(this);	// owning player is ignored
+	TraceParams.AddIgnoredComponent(m_meshRightHand);	// hands are ignored
+	TraceParams.AddIgnoredComponent(m_meshLeftHand);	// hands are ignored
+	
 	// initialize hit info
 	FHitResult HitResult;
 	FVector end = m_meshRightHand->GetForwardVector() * 1000;
-	// do trace to muzzle to fire direction * laser range
+	
 	bool HadHit = GetWorld()->LineTraceSingleByChannel(
 		HitResult,
 		m_meshRightHand->GetComponentLocation(),
 		m_meshRightHand->GetComponentLocation() + end,
 		ECC_Visibility,
 		TraceParams);
-	DrawDebugLine(GetWorld(),m_meshRightHand->GetComponentLocation(),
-		m_meshRightHand->GetComponentLocation() + end/* HitResult.Location*/,FColor::Red,false,0.1);
+	//DrawDebugLine(GetWorld(),m_meshRightHand->GetComponentLocation(),m_meshRightHand->GetComponentLocation() + end/* HitResult.Location*/,FColor::Red,false,0.1);
+	compPointer->ArrowLength = (m_meshRightHand->GetComponentLocation() + end).Size();
+	//printf("%f",compPointer->ArrowLength);
+
 	if(HadHit)
 	{
 		
@@ -185,10 +190,10 @@ void AcVRPlayerPawn::CreateComponents()
 	compVRCamera->SetRelativeLocationAndRotation(FVector::ZeroVector, FQuat::Identity);
 	compVRCamera->SetRelativeScale3D(FVector::OneVector);
 
-
 	
 	CreateHandController(compVRCameraRoot, "MC_Left", FXRMotionControllerBase::LeftHandSourceId);
 	CreateHandController(compVRCameraRoot, "MC_Right",FXRMotionControllerBase::RightHandSourceId);
+
 
 }
 
@@ -200,6 +205,7 @@ void AcVRPlayerPawn::CreateHandController(USceneComponent* a_compParent, FName a
 	if (a_nameHandType == FXRMotionControllerBase::LeftHandSourceId)
 	{
 		compMotionController->SetRelativeScale3D(FVector(1,1,-1));
+		//SetWorldScale3D
 		
 		
 	}
@@ -211,6 +217,13 @@ void AcVRPlayerPawn::CreateHandController(USceneComponent* a_compParent, FName a
 		menuInteract->SetupAttachment(compMotionController);
 		menuInteract->InteractionDistance = 500;
 		menuInteract->PointerIndex=1.0;
+		compPointer=  CreateDefaultSubobject<UArrowComponent>(TEXT("world Interaction"));
+		compPointer->SetupAttachment(compMotionController);
+		compPointer->SetArrowColor(FColor::Red);
+		compPointer->ArrowSize = 0.5;
+		compPointer->ArrowLength = 100;
+
+	
 	}
 	compMotionController->MotionSource = a_nameHandType;
 	compMotionController->SetupAttachment(a_compParent);
@@ -346,7 +359,7 @@ void AcVRPlayerPawn::TP_Player_Implementation()
 	
 	if(TPrequest)
 	{
-		RootComponent->SetWorldLocation(TpLocation);
+		RootComponent->SetWorldLocation(TpLocation+FVector(0,0,96));
 	}
 }
 void AcVRPlayerPawn::TP_Houses_Implementation()

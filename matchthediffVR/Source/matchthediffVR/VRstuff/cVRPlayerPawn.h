@@ -58,6 +58,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UCameraComponent* compVRCamera;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UArrowComponent* compPointer;
+	/*
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UCapsuleComponent* compPlayerOutline;*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool inPuzzleHouse = true;
 	UPROPERTY(VisibleDefaultsOnly,BlueprintReadWrite, Category=Mesh)
 	FVector DistanceBetweenHouses = FVector(0,-5174.000000,0);

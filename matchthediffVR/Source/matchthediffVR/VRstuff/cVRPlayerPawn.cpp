@@ -3,8 +3,6 @@
 
 #include "cVRPlayerPawn.h"
 #include "Kismet/GameplayStatics.h"
-#include "AI/NavigationSystemBase.h"
-#include "NavigationSystem.h"
 #include <dsound.h>
 
 
@@ -153,34 +151,28 @@ void AcVRPlayerPawn::Tick(float DeltaTime)
 		//Trace Telepot Destination Function
 		FPredictProjectilePathResult PredictResult;
 		//may need fixed
-		FPredictProjectilePathParams PredictParams = FPredictProjectilePathParams(0.0,TPDirection->GetComponentLocation(),TPDirection->GetForwardVector()*TPLaunchVelocity,2.0,EObjectTypeQuery::ObjectTypeQuery1,this);
+		FPredictProjectilePathParams PredictParams = FPredictProjectilePathParams(0.0,TPDirection->GetWorldLocation(),TPDirection->GetForwardVector()*TPLaunchVelocity,2.0,EObjectTypeQuery::WorldStatic,this);
 	
-		bool TPcheck = UGameplayStatics::PredictProjectilePath(GetWorld(),PredictParams,PredictResult);
-		FNavLocation ProjectedLocation;
-		FNavAgentProperties* AgentProperties;// = FNavAgentProperties(0.0);
-		FSharedConstNavQueryFilter QueryFilter;
-		
-		//GET FROM GetNavigationSystem(NavigationSystemBase) To UNavigationSystemV1
-		bool standPalce = GetWorld()->GetNavigationSystem()->ProjectPointToNavigation(FVector(PredictResult.HitResult.Location.X,PredictResult.HitResult.Location.Y,PredictResult.HitResult.Location.Z),ProjectedLocation,FVector(500.0,500.0,500.0),AgentProperties,QueryFilter);
-		
-		
-		bool success = TPcheck && standPalce;
+		bool TPcheck = PredictProjectilePath(GetWorld(),PredictParams,PredictResult);
+		FVector ProjectedLocation;
+		bool standPalce = ProjectPointToNavigation(PredictResult.HitResult.Location,ProjectedLocation,FVector(500.0,500.0,500.0));
+		bool success = TPcheck and standPalce;
 		//Trace Telepot Destination Function END
 		IsTPValid = success;
 		//sequence p1
 		TPCylinder->SetVisibility(IsTPValid,true);
 		FHitResult LandHitResult;
-		FCollisionObjectQueryParams LandObjects = FCollisionObjectQueryParams(ECollisionChannel::ECC_WorldStatic);
+		FCollisionObjectQueryParams LandObjects = FCollisionObjectQueryParams(ECollisionChannel::WorldStatic);
 		FCollisionQueryParams  Params;
 
-		bool LandHit = GetWorld()->LineTraceSingleByObjectType(LandHitResult,ProjectedLocation.Location,ProjectedLocation.Location-FVector(0,0,-200),LandObjects,Params);
+		bool LandHit = GetWorld()->LineTraceSingleByObjectType(LandHitResult,ProjectedLocation,ProjectedLocation-FVector(0,0,-200),LandObjects,Params);
 		if(LandHit)
 		{
 			TPCylinder->SetWorldLocation(LandHitResult.Location);
 		}
 		else
 		{
-			TPCylinder->SetWorldLocation(ProjectedLocation.Location);
+			TPCylinder->SetWorldLocation(ProjectedLocation);
 		}
 		// sequence p2 is skiped
 		// sequence p3 may be skipped if needed, create new bool
@@ -200,7 +192,7 @@ void AcVRPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	InputComponent->BindAction("GripRight", IE_Released, this, &AcVRPlayerPawn::GripRightHand_Released);
 	//InputComponent->BindAction("return to menu(tmp)", IE_Released, this, &AcVRPlayerPawn::Return_to_main);
 	//InputComponent->BindAction("unassigned left grip", IE_Pressed, this, );
-	InputComponent->BindAction("TPprep", IE_Pressed, this, &AcVRPlayerPawn::TP_Ready );
+	InputComponent->BindAction("TPprep", IE_Pressed, this, );
 	//InputComponent->BindAction("unassigned left grip", IE_Released, this, );
 	InputComponent->BindAction("TP", IE_Released, this, &AcVRPlayerPawn::TP_Player);
 	InputComponent->BindAction("Swap Houses", IE_Released, this, &AcVRPlayerPawn::TP_Houses);
@@ -240,19 +232,19 @@ void AcVRPlayerPawn::CreateComponents()
 	
 	
 	//create mesh to indicate TP location for arrow parts
-	TPEndPoint=CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ArcEndPoint"));
+	TPEndPoint=CreateDefaultSubobject<UStaticMesh>(TEXT("ArcEndPoint"));
 	TPEndPoint->SetupAttachment(rootComponent);
 	//create a Cylinder to show a possible teleport location
-	TPCylinder=CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TeleportCylinder"));
+	TPCylinder=CreateDefaultSubobject<UStaticMesh>(TEXT("TeleportCylinder"));
 	TPCylinder->SetupAttachment(rootComponent);
 	//create the parts of the TP indicator 
-	TPRing=CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Ring"));
+	TPRing=CreateDefaultSubobject<UStaticMesh>(TEXT("Ring"));
 	TPRing->SetupAttachment(TPCylinder);
 	
-	TPArrow=CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Arrow"));
+	TPArrow=CreateDefaultSubobject<UStaticMesh>(TEXT("Arrow"));
 	TPArrow->SetupAttachment(TPCylinder);
 	
-	TPRoomScaleMesh=CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RoomScaleMesh"));
+	TPRoomScaleMesh=CreateDefaultSubobject<UStaticMesh>(TEXT("RoomScaleMesh"));
 	TPRoomScaleMesh->SetupAttachment(TPArrow);
 	
 	
@@ -438,7 +430,7 @@ void AcVRPlayerPawn::TP_Ready_Implementation()
 {
 	
 	IsTPchecking=true;
-	TPCylinder->SetVisibility(true,true);
+	TPCylinder->SetVisibility(true,true)
 }
 void AcVRPlayerPawn::ClearArc()
 {
@@ -452,27 +444,26 @@ void AcVRPlayerPawn::UpdateSpline(bool haveValidLocation, TArray<FPredictProject
 	{
 		SplinePoints.Empty();
 			
-		SplinePoints.Add(FPredictProjectilePathPointData(TPDirection->GetComponentLocation(),FVector(0,0,0),0));
-		SplinePoints.Add(FPredictProjectilePathPointData((TPDirection->GetForwardVector()*20)+TPDirection->GetComponentLocation(),FVector(0,0,0),0));
+		SplinePoints.Add(FPredictProjectilePathPointData(TPDirection->GetWorldLocation(),FVector(0,0,0),0));
+		SplinePoints.Add(FPredictProjectilePathPointData((TPDirection->GetWorldLocation()*20)+TPDirection->GetWorldLocation(),FVector(0,0,0),0)));
 	}
 		
 	for (int i = 0; i < SplinePoints.Num(); i++) 
 	{ 
-		TPSpline->AddSplinePoint(SplinePoints[i].Location,ESplineCoordinateSpace::Local,true);
+		TPSpline->AddSplinePoint(SplinePoints[i].Location,true);
 	}
 	TPSpline->SetSplinePointType(SplinePoints.FindLast(SplinePoints.Last()),ESplinePointType::CurveClamped,true);
 	for(int j =0;j<TPSpline->GetNumberOfSplinePoints()-2;j++)
 	{
-		USplineMeshComponent *s = CreateDefaultSubobject<USplineMeshComponent>(FName(*FString::FromInt(j)));
-		s->SetStartAndEnd(SplinePoints[j].Location, TPSpline->GetTangentAtSplinePoint(j,ESplineCoordinateSpace::Local), SplinePoints[j+1].Location,TPSpline->GetTangentAtSplinePoint(j+1,ESplineCoordinateSpace::Local),true);
-		SplineMeshs.Add(s);
+		USplineMeshComponent *s = ConstructObject<USplineMeshComponent>(USplineMeshComponent::StaticClass(), this);
+		s->SetStaticMesh(Mesh);
+		s->SetStartAndEnd(SplinePoints[j].Location, TPSpline->GetTangentAtSplinePoint(j,ESplineCoordinateSpace::Local), SplinePoints[j+1],TPSpline->GetTangentAtSplinePoint(j+1,ESplineCoordinateSpace::Local,true);
 	}
 }
 
-void AcVRPlayerPawn::UpdateEndpoint(bool haveValidLocation, FVector NewLocation)
+void AcVRPlayerPawn::UpdateEndpoint(bool haveValidLocation, Vector NewLocation)
 {
-	TPEndPoint->SetVisibility(haveValidLocation && IsTPValid,false);
-	FHitResult* ThrowawayHitResult;
-	TPEndPoint->SetWorldLocation(NewLocation,false,ThrowawayHitResult,ETeleportType::None);
+	TPEndPoint->SetVisibility(haveValidLocation and IsTPValid,false);
+	TPEndPoint->SetWorldLocation(NewLocation,false,true);
 	//TPArrow->SetWorldRotation();
 }

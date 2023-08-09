@@ -11,8 +11,6 @@
 #include "MotionControllerComponent.h"
 #include "XRMotionControllerBase.h"
 #include "Components/WidgetInteractionComponent.h"
-#include "Components/SplineComponent.h"
-#include "Components/SplineMeshComponent.h"
 #include "matchthediffVR/Interactables.h"
 #include "Blueprint/UserWidget.h"
 #include "cVRPlayerPawn.generated.h"
@@ -89,7 +87,7 @@ public:
 	
 	FVector TpLocation;
 	bool TPrequest= false;
-	TArray<USplineMeshComponent*> SplineMeshs;
+	TArray<USplineComponent*> SplineMeshs;
 	bool IsTPchecking = false;
 	bool IsTPValid = false;
 	float TPLaunchVelocity = 900.0;
@@ -132,7 +130,7 @@ public:
 	//UFUNCTION(BlueprintNativeEvent, Category = "Teleport")
 	void UpdateSpline(bool haveValidLocation, TArray<FPredictProjectilePathPointData> SplinePoints );
 	//UFUNCTION(BlueprintNativeEvent, Category = "Teleport")
-	void UpdateEndpoint(bool haveValidLocation, FVector NewLocation);
+	void UpdateEndpoint(bool haveValidLocation, Vector NewLocation);
 };
 
 

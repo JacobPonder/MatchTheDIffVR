@@ -157,11 +157,11 @@ void AcVRPlayerPawn::Tick(float DeltaTime)
 	
 		bool TPcheck = UGameplayStatics::PredictProjectilePath(GetWorld(),PredictParams,PredictResult);
 		FNavLocation ProjectedLocation;
-		FNavAgentProperties AgentProperties = FNavAgentProperties(0.0);
+		FNavAgentProperties* AgentProperties;// = FNavAgentProperties(0.0);
 		FSharedConstNavQueryFilter QueryFilter;
 		
-		
-		bool standPalce = UNavigationSystemV1::GetNavigationSystem(GetWorld())->ProjectPointToNavigation(FVector(PredictResult.HitResult.Location.X,PredictResult.HitResult.Location.Y,PredictResult.HitResult.Location.Z),ProjectedLocation,FVector(500.0,500.0,500.0),&AgentProperties,QueryFilter);
+		//GET FROM GetNavigationSystem(NavigationSystemBase) To UNavigationSystemV1
+		bool standPalce = GetWorld()->GetNavigationSystem()->ProjectPointToNavigation(FVector(PredictResult.HitResult.Location.X,PredictResult.HitResult.Location.Y,PredictResult.HitResult.Location.Z),ProjectedLocation,FVector(500.0,500.0,500.0),AgentProperties,QueryFilter);
 		
 		
 		bool success = TPcheck && standPalce;
@@ -460,7 +460,7 @@ void AcVRPlayerPawn::UpdateSpline(bool haveValidLocation, TArray<FPredictProject
 	{ 
 		TPSpline->AddSplinePoint(SplinePoints[i].Location,ESplineCoordinateSpace::Local,true);
 	}
-	TPSpline->SetSplinePointType(SplinePoints.Num()-1,ESplinePointType::CurveClamped,true);
+	TPSpline->SetSplinePointType(SplinePoints.FindLast(SplinePoints.Last()),ESplinePointType::CurveClamped,true);
 	for(int j =0;j<TPSpline->GetNumberOfSplinePoints()-2;j++)
 	{
 		USplineMeshComponent *s = CreateDefaultSubobject<USplineMeshComponent>(FName(*FString::FromInt(j)));
@@ -472,7 +472,7 @@ void AcVRPlayerPawn::UpdateSpline(bool haveValidLocation, TArray<FPredictProject
 void AcVRPlayerPawn::UpdateEndpoint(bool haveValidLocation, FVector NewLocation)
 {
 	TPEndPoint->SetVisibility(haveValidLocation && IsTPValid,false);
-	FHitResult ThrowawayHitResult= FHitResult();
-	TPEndPoint->SetWorldLocation(NewLocation,false,&ThrowawayHitResult,ETeleportType::None);
+	FHitResult* ThrowawayHitResult;
+	TPEndPoint->SetWorldLocation(NewLocation,false,ThrowawayHitResult,ETeleportType::None);
 	//TPArrow->SetWorldRotation();
 }

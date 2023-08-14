@@ -11,6 +11,8 @@
 #include "MotionControllerComponent.h"
 #include "XRMotionControllerBase.h"
 #include "Components/WidgetInteractionComponent.h"
+#include "Components/SplineComponent.h"
+#include "Components/SplineMeshComponent.h"
 #include "matchthediffVR/Interactables.h"
 #include "Blueprint/UserWidget.h"
 #include "cVRPlayerPawn.generated.h"
@@ -35,8 +37,7 @@ private:
 	
 	bool IsHighlighting = false;
  	AInteractables* CurHighlighted;
-	FVector TpLocation;
-	bool TPrequest= false;
+	
 	
 	void CacheHandAnimInstances();
 	
@@ -57,9 +58,9 @@ public:
 	USceneComponent* compVRCameraRoot;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UCameraComponent* compVRCamera;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UArrowComponent* compPointer;
 	/*
+	
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UCapsuleComponent* compPlayerOutline;*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -68,6 +69,30 @@ public:
 	FVector DistanceBetweenHouses = FVector(0,-5174.000000,0);
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UWidgetInteractionComponent* menuInteract;
+	
+	
+	//Teleporting Variables and Components
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UArrowComponent* TPDirection;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USplineComponent* TPSpline;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UStaticMeshComponent* TPEndPoint;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UStaticMeshComponent* TPCylinder;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UStaticMeshComponent* TPRing;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UStaticMeshComponent* TPArrow;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UStaticMeshComponent* TPRoomScaleMesh;
+	
+	FVector TpLocation;
+	bool TPrequest= false;
+	TArray<USplineMeshComponent*> SplineMeshs;
+	bool IsTPchecking = false;
+	bool IsTPValid = false;
+	float TPLaunchVelocity = 900.0;
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -99,6 +124,15 @@ public:
 	void TP_Houses();
 	UFUNCTION(BlueprintNativeEvent, Category = "Input")
 	void Return_to_main();
+	
+	UFUNCTION(BlueprintNativeEvent, Category = "Input")
+	void TP_Ready();
+	//UFUNCTION(BlueprintNativeEvent, Category = "Teleport")
+	void ClearArc();
+	//UFUNCTION(BlueprintNativeEvent, Category = "Teleport")
+	void UpdateSpline(bool haveValidLocation, TArray<FPredictProjectilePathPointData> SplinePoints );
+	//UFUNCTION(BlueprintNativeEvent, Category = "Teleport")
+	void UpdateEndpoint(bool haveValidLocation, FVector NewLocation);
 };
 
 

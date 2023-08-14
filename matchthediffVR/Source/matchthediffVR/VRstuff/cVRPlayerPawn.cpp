@@ -3,6 +3,8 @@
 
 #include "cVRPlayerPawn.h"
 #include "Kismet/GameplayStatics.h"
+#include "AI/NavigationSystemBase.h"
+#include "NavigationSystem.h"
 #include <dsound.h>
 
 
@@ -65,7 +67,7 @@ void AcVRPlayerPawn::Tick(float DeltaTime)
 		ECC_Visibility,
 		TraceParams);
 	//DrawDebugLine(GetWorld(),m_meshRightHand->GetComponentLocation(),m_meshRightHand->GetComponentLocation() + end/* HitResult.Location*/,FColor::Red,false,0.1);
-	compPointer->ArrowLength = (m_meshRightHand->GetComponentLocation() + end).Size();
+	//compPointer->ArrowLength = (m_meshRightHand->GetComponentLocation() + end).Size();
 	//printf("%f",compPointer->ArrowLength);
 
 	if(HadHit)
@@ -75,7 +77,7 @@ void AcVRPlayerPawn::Tick(float DeltaTime)
 		if(selected)
 		{
 			
-			TPrequest = false;
+			//TPrequest = false;
 			APickupBase* Pickup = Cast<APickupBase>(HitResult.Actor);
 			APuzzleBase* Puzzle = Cast<APuzzleBase>(HitResult.Actor);
 			if(Pickup)
@@ -137,12 +139,54 @@ void AcVRPlayerPawn::Tick(float DeltaTime)
 				CurHighlighted = nullptr;
 				IsHighlighting = false;
 			}
-			TpLocation = HitResult.Location;
-			TPrequest = true;
+			//TpLocation = HitResult.Location;
+			//TPrequest = true;
 			
 			
 		}
 		
+	}
+	
+	ClearArc();
+	if(IsTPchecking)
+	{
+		//Trace Telepot Destination Function
+		FPredictProjectilePathResult PredictResult;
+		//may need fixed
+		FPredictProjectilePathParams PredictParams = FPredictProjectilePathParams(0.0,TPDirection->GetComponentLocation(),TPDirection->GetForwardVector()*TPLaunchVelocity,2.0,EObjectTypeQuery::ObjectTypeQuery1,this);
+	
+		bool TPcheck = UGameplayStatics::PredictProjectilePath(GetWorld(),PredictParams,PredictResult);
+		FNavLocation ProjectedLocation;
+		FNavAgentProperties AgentProperties = FNavAgentProperties(0.0);
+		FSharedConstNavQueryFilter QueryFilter;
+		
+		
+		bool standPalce = UNavigationSystemV1::GetNavigationSystem(GetWorld())->ProjectPointToNavigation(FVector(PredictResult.HitResult.Location.X,PredictResult.HitResult.Location.Y,PredictResult.HitResult.Location.Z),ProjectedLocation,FVector(500.0,500.0,500.0),&AgentProperties,QueryFilter);
+		
+		
+		bool success = TPcheck && standPalce;
+		//Trace Telepot Destination Function END
+		IsTPValid = success;
+		//sequence p1
+		TPCylinder->SetVisibility(IsTPValid,true);
+		FHitResult LandHitResult;
+		FCollisionObjectQueryParams LandObjects = FCollisionObjectQueryParams(ECollisionChannel::ECC_WorldStatic);
+		FCollisionQueryParams  Params;
+
+		bool LandHit = GetWorld()->LineTraceSingleByObjectType(LandHitResult,ProjectedLocation.Location,ProjectedLocation.Location-FVector(0,0,-200),LandObjects,Params);
+		if(LandHit)
+		{
+			TPCylinder->SetWorldLocation(LandHitResult.Location);
+		}
+		else
+		{
+			TPCylinder->SetWorldLocation(ProjectedLocation.Location);
+		}
+		// sequence p2 is skiped
+		// sequence p3 may be skipped if needed, create new bool
+		//sequence p4 
+		UpdateSpline(IsTPValid,PredictResult.PathData);
+		UpdateEndpoint(IsTPValid,PredictResult.HitResult.Location);
 	}
 }
 
@@ -150,13 +194,13 @@ void AcVRPlayerPawn::Tick(float DeltaTime)
 void AcVRPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	InputComponent->BindAction("GripLeft", IE_Pressed, this, &AcVRPlayerPawn::GripLeftHand_Pressed);
+	//InputComponent->BindAction("GripLeft", IE_Pressed, this, &AcVRPlayerPawn::GripLeftHand_Pressed);
 	InputComponent->BindAction("GripRight", IE_Pressed, this, &AcVRPlayerPawn::GripRightHand_Pressed);
-	InputComponent->BindAction("GripLeft", IE_Released, this, &AcVRPlayerPawn::GripLeftHand_Released);
+	//InputComponent->BindAction("GripLeft", IE_Released, this, &AcVRPlayerPawn::GripLeftHand_Released);
 	InputComponent->BindAction("GripRight", IE_Released, this, &AcVRPlayerPawn::GripRightHand_Released);
 	//InputComponent->BindAction("return to menu(tmp)", IE_Released, this, &AcVRPlayerPawn::Return_to_main);
 	//InputComponent->BindAction("unassigned left grip", IE_Pressed, this, );
-	//InputComponent->BindAction("TP", IE_Pressed, this, );
+	InputComponent->BindAction("TPprep", IE_Pressed, this, &AcVRPlayerPawn::TP_Ready );
 	//InputComponent->BindAction("unassigned left grip", IE_Released, this, );
 	InputComponent->BindAction("TP", IE_Released, this, &AcVRPlayerPawn::TP_Player);
 	InputComponent->BindAction("Swap Houses", IE_Released, this, &AcVRPlayerPawn::TP_Houses);
@@ -193,7 +237,25 @@ void AcVRPlayerPawn::CreateComponents()
 	
 	CreateHandController(compVRCameraRoot, "MC_Left", FXRMotionControllerBase::LeftHandSourceId);
 	CreateHandController(compVRCameraRoot, "MC_Right",FXRMotionControllerBase::RightHandSourceId);
-
+	
+	
+	//create mesh to indicate TP location for arrow parts
+	TPEndPoint=CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ArcEndPoint"));
+	TPEndPoint->SetupAttachment(rootComponent);
+	//create a Cylinder to show a possible teleport location
+	TPCylinder=CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TeleportCylinder"));
+	TPCylinder->SetupAttachment(rootComponent);
+	//create the parts of the TP indicator 
+	TPRing=CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Ring"));
+	TPRing->SetupAttachment(TPCylinder);
+	
+	TPArrow=CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Arrow"));
+	TPArrow->SetupAttachment(TPCylinder);
+	
+	TPRoomScaleMesh=CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RoomScaleMesh"));
+	TPRoomScaleMesh->SetupAttachment(TPArrow);
+	
+	
 
 }
 
@@ -206,7 +268,13 @@ void AcVRPlayerPawn::CreateHandController(USceneComponent* a_compParent, FName a
 	{
 		compMotionController->SetRelativeScale3D(FVector(1,1,-1));
 		//SetWorldScale3D
-		
+		TPDirection=  CreateDefaultSubobject<UArrowComponent>(TEXT("Arc Direction"));
+		TPDirection->SetupAttachment(compMotionController);
+		TPDirection->SetArrowColor(FColor::Red);
+		TPDirection->ArrowSize = 0.5;
+		TPDirection->ArrowLength = 100;
+		TPSpline=  CreateDefaultSubobject<USplineComponent>(TEXT("Arc Spline"));
+		TPSpline->SetupAttachment(compMotionController);
 		
 	}
 	else
@@ -217,11 +285,7 @@ void AcVRPlayerPawn::CreateHandController(USceneComponent* a_compParent, FName a
 		menuInteract->SetupAttachment(compMotionController);
 		menuInteract->InteractionDistance = 500;
 		menuInteract->PointerIndex=1.0;
-		compPointer=  CreateDefaultSubobject<UArrowComponent>(TEXT("world Interaction"));
-		compPointer->SetupAttachment(compMotionController);
-		compPointer->SetArrowColor(FColor::Red);
-		compPointer->ArrowSize = 0.5;
-		compPointer->ArrowLength = 100;
+	
 
 	
 	}
@@ -321,26 +385,12 @@ void AcVRPlayerPawn::GripLeftHand_Released_Implementation()
 	UE_LOG(LogTemp, Log, TEXT("Left Hand Grip Released"));
 	//m_refLeftHandAnimBP->SetGripValue(0.0f);
 	
-	if(IsHighlighting)
-	{
-		
-		
-		if(CurHighlighted)
-		{
-			
-			CurHighlighted->OnActivate();
-		}	
-	}
 	
-	//menuInteract->PressAndReleaseKey(EKeys::LeftMouseButton);
-	
-	//menuInteract->ReleasePointerKey(EKeys::LeftMouseButton);
-	//if bool call targets clicked
 	
 }
 void AcVRPlayerPawn::GripRightHand_Released_Implementation()
 {
-	UE_LOG(LogTemp, Log, TEXT("Left Hand Grip Released"));
+	UE_LOG(LogTemp, Log, TEXT("Right Hand Grip Released"));
 	//m_refRightHandAnimBP->SetGripValue(0.0f);
 	if(IsHighlighting)
 	{
@@ -383,4 +433,46 @@ void AcVRPlayerPawn::TP_Houses_Implementation()
 void AcVRPlayerPawn::Return_to_main_Implementation()
 {
 	//UGameplayStatics::OpenLevel(this, "MainMenu1");
+}
+void AcVRPlayerPawn::TP_Ready_Implementation()
+{
+	
+	IsTPchecking=true;
+	TPCylinder->SetVisibility(true,true);
+}
+void AcVRPlayerPawn::ClearArc()
+{
+	//SplineMeshs->DestroyComponent();
+	SplineMeshs.Empty();
+	TPSpline->ClearSplinePoints(true);
+}
+void AcVRPlayerPawn::UpdateSpline(bool haveValidLocation, TArray<FPredictProjectilePathPointData> SplinePoints)
+{
+	if(!haveValidLocation)
+	{
+		SplinePoints.Empty();
+			
+		SplinePoints.Add(FPredictProjectilePathPointData(TPDirection->GetComponentLocation(),FVector(0,0,0),0));
+		SplinePoints.Add(FPredictProjectilePathPointData((TPDirection->GetForwardVector()*20)+TPDirection->GetComponentLocation(),FVector(0,0,0),0));
+	}
+		
+	for (int i = 0; i < SplinePoints.Num(); i++) 
+	{ 
+		TPSpline->AddSplinePoint(SplinePoints[i].Location,ESplineCoordinateSpace::Local,true);
+	}
+	TPSpline->SetSplinePointType(SplinePoints.Num()-1,ESplinePointType::CurveClamped,true);
+	for(int j =0;j<TPSpline->GetNumberOfSplinePoints()-2;j++)
+	{
+		USplineMeshComponent *s = CreateDefaultSubobject<USplineMeshComponent>(FName(*FString::FromInt(j)));
+		s->SetStartAndEnd(SplinePoints[j].Location, TPSpline->GetTangentAtSplinePoint(j,ESplineCoordinateSpace::Local), SplinePoints[j+1].Location,TPSpline->GetTangentAtSplinePoint(j+1,ESplineCoordinateSpace::Local),true);
+		SplineMeshs.Add(s);
+	}
+}
+
+void AcVRPlayerPawn::UpdateEndpoint(bool haveValidLocation, FVector NewLocation)
+{
+	TPEndPoint->SetVisibility(haveValidLocation && IsTPValid,false);
+	FHitResult ThrowawayHitResult= FHitResult();
+	TPEndPoint->SetWorldLocation(NewLocation,false,&ThrowawayHitResult,ETeleportType::None);
+	//TPArrow->SetWorldRotation();
 }

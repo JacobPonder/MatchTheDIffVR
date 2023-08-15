@@ -53,7 +53,7 @@ void AcVRPlayerPawn::Tick(float DeltaTime)
 	TraceParams.AddIgnoredActor(this);	// owning player is ignored
 	TraceParams.AddIgnoredComponent(m_meshRightHand);	// hands are ignored
 	TraceParams.AddIgnoredComponent(m_meshLeftHand);	// hands are ignored
-	
+	TraceParams.AddIgnoredComponent(CpauseMenuC);
 	// initialize hit info
 	FHitResult HitResult;
 	FVector end = m_meshRightHand->GetForwardVector() * 1000;
@@ -65,7 +65,7 @@ void AcVRPlayerPawn::Tick(float DeltaTime)
 		ECC_Visibility,
 		TraceParams);
 	//DrawDebugLine(GetWorld(),m_meshRightHand->GetComponentLocation(),m_meshRightHand->GetComponentLocation() + end/* HitResult.Location*/,FColor::Red,false,0.1);
-	compPointer->ArrowLength = (m_meshRightHand->GetComponentLocation() + end).Size();
+	//compPointer->ArrowLength = (m_meshRightHand->GetComponentLocation() + end).Size();
 	//printf("%f",compPointer->ArrowLength);
 
 	if(HadHit)
@@ -178,6 +178,8 @@ void AcVRPlayerPawn::CreateComponents()
 	//Chaperone component that is required for Steam VR plugin
 	USteamVRChaperoneComponent* chaperone = CreateDefaultSubobject<USteamVRChaperoneComponent>(TEXT("SteamVR Chaperone"));
 
+	CpauseMenuC =  CreateDefaultSubobject<UWidgetComponent>(TEXT("Menu"));
+	CpauseMenuC->SetupAttachment(rootComponent);
 	//Create a scene component that will act as the parent for the camera. This might come in handy later.
 	compVRCameraRoot = CreateDefaultSubobject<USceneComponent>(TEXT("VR Camera Root"));
 	compVRCameraRoot->SetupAttachment(rootComponent);
@@ -217,11 +219,11 @@ void AcVRPlayerPawn::CreateHandController(USceneComponent* a_compParent, FName a
 		menuInteract->SetupAttachment(compMotionController);
 		menuInteract->InteractionDistance = 500;
 		menuInteract->PointerIndex=1.0;
-		compPointer=  CreateDefaultSubobject<UArrowComponent>(TEXT("world Interaction"));
-		compPointer->SetupAttachment(compMotionController);
-		compPointer->SetArrowColor(FColor::Red);
-		compPointer->ArrowSize = 0.5;
-		compPointer->ArrowLength = 100;
+		//compPointer=  CreateDefaultSubobject<UArrowComponent>(TEXT("world Interaction"));
+		//compPointer->SetupAttachment(compMotionController);
+		//compPointer->SetArrowColor(FColor::Red);
+		//compPointer->ArrowSize = 0.5;
+		//compPointer->ArrowLength = 100;
 
 	
 	}

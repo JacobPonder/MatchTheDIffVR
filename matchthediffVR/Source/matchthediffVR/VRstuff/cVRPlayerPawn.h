@@ -11,6 +11,7 @@
 #include "MotionControllerComponent.h"
 #include "XRMotionControllerBase.h"
 #include "Components/WidgetInteractionComponent.h"
+#include "Components/WidgetComponent.h"
 #include "matchthediffVR/Interactables.h"
 #include "Blueprint/UserWidget.h"
 #include "cVRPlayerPawn.generated.h"
@@ -58,7 +59,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UCameraComponent* compVRCamera;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UArrowComponent* compPointer;
+	UWidgetComponent* CpauseMenuC;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//UArrowComponent* compPointer;
 	/*
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UCapsuleComponent* compPlayerOutline;*/

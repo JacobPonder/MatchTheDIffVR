@@ -1,0 +1,9 @@
+Pre-Alpha-1.0 starts when the "wait" for music begins.
+each puzzle will add 1, file conversion(to c++) will add .1, and bug fixes add .0.1
+Alpha-1.0 will begin when there are 5 puzzles per floor, and i am able to "distribute" the product.
+each map will add 1, stages will add .1 each, and bug fixes will add .0.1
+Beta-1.0 starts with 3 maps, and may require an asset overhaul
+same scaling as as alpha.
+
+full release requires a slight rehaul, as story will be required. this will require writing assitance, 
+but the main plot should revolve around the reason why the different maps are in different eras/styles, beyond that I got nothing, though it should have stanley parable or view finder vibes.

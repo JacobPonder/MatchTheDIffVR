@@ -1,3 +1,5 @@
+**this is for personal notes on my build plans**
+
 Pre-Alpha-1.0 starts when the "wait" for music begins.
 each puzzle will add 1, file conversion(to c++) will add .1, and bug fixes add .0.1
 Alpha-1.0 will begin when there are 5 puzzles per floor, and i am able to "distribute" the product.
